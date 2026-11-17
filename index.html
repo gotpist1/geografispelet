@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jordens krafter – plugga geografi</title>
+<style>
+:root{
+  --blue:#0f6b78;--blue-d:#0a4c56;--blue-l:#e0f2f4;--yellow:#ffc933;--yellow-d:#b88600;
+  --ink:#12212b;--muted:#44586a;--bg:#f2f7f6;--card:#ffffff;--line:#d3e0e0;
+  --ok:#156b2f;--ok-bg:#d9f2e0;--bad:#b3261e;--bad-bg:#fde3e1;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--yellow-d);outline-offset:2px}
+header{background:radial-gradient(2px 2px at 24px 14px,rgba(255,255,255,.7),transparent),radial-gradient(1.5px 1.5px at 96px 40px,rgba(255,255,255,.5),transparent),linear-gradient(135deg,#0b3c5d,#117a8b);background-size:200px 60px,200px 60px,auto;color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hud{max-width:900px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:12px}
+.hud h1{font-size:1.05rem;margin:0;white-space:nowrap}
+.hud .lvl{flex:1;min-width:0}
+.hud .lvl small{display:block;font-size:.8rem;opacity:.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:10px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--yellow);border-radius:99px;transition:width .5s}
+.iconbtn{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:12px;min-width:44px;min-height:44px;font-size:1.2rem}
+.iconbtn:hover{background:rgba(255,255,255,.28)}
+main{max-width:900px;margin:0 auto;padding:18px 14px 60px}
+h2{margin:.2em 0 .5em;font-size:1.5rem}
+h3{margin:.2em 0 .4em}
+.sub{color:var(--muted);margin:0 0 1em}
+.card{background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:16px}
+.grid{display:grid;gap:14px}
+.menu{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.tile{text-align:left;background:var(--card);border:2px solid var(--line);border-radius:var(--r);padding:16px;display:block;width:100%;transition:transform .12s,border-color .12s}
+.tile:hover{transform:translateY(-2px);border-color:var(--blue)}
+.tile .em{font-size:2rem;display:block}
+.tile b{display:block;font-size:1.15rem;margin:.2em 0}
+.tile span.d{color:var(--muted);font-size:.95rem}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:12px;padding:12px 20px;min-height:48px;font-weight:700}
+.btn:hover{background:var(--blue-d)}
+.btn.alt{background:var(--yellow);color:#12212b}
+.btn.alt:hover{background:#ffd95e}
+.btn.ghost{background:transparent;color:var(--blue);border:2px solid var(--blue)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.chip{background:var(--card);border:2px solid var(--line);border-radius:99px;padding:8px 14px;min-height:44px}
+.chip[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700}
+.stat{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-weight:700}
+.stat .grow{flex:1}
+.q{font-size:1.2rem;font-weight:600}
+.q.big{font-size:1.8rem;text-align:center;padding:10px 0}
+.tag{display:inline-block;background:var(--blue-l);color:var(--blue-d);border-radius:99px;padding:2px 12px;font-size:.85rem;font-weight:700;margin-bottom:8px}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:56px;width:100%}
+.opt:hover:not(:disabled){border-color:var(--blue);background:var(--blue-l)}
+.opt .k{background:var(--blue-l);color:var(--blue-d);border-radius:8px;min-width:30px;height:30px;display:grid;place-items:center;font-weight:800;flex:none}
+.opt.right{background:var(--ok-bg);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;border-radius:12px;font-weight:600}
+.fb.ok{background:var(--ok-bg);color:#0d4a1f}
+.fb.bad{background:var(--bad-bg);color:#7a1610}
+.fb p{margin:.3em 0 0;font-weight:400}
+.mem{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.mc{min-height:104px;border-radius:14px;border:2px solid var(--blue);background:var(--blue);color:#fff;font-size:1.8rem;display:grid;place-items:center;padding:8px;text-align:center}
+.mc.open{background:var(--card);color:var(--ink);border-color:var(--line);font-size:.88rem;line-height:1.3;font-weight:600}
+.mc.open.term{background:var(--yellow);border-color:var(--yellow-d);font-size:1.05rem;font-weight:800}
+.mc.done{background:var(--ok-bg);border-color:var(--ok);color:#0d4a1f}
+.mc.pop{animation:pop .25s}
+@keyframes pop{50%{transform:scale(1.06)}}
+.sortcard{font-size:1.5rem;font-weight:800;text-align:center;padding:26px 12px;background:var(--yellow);border-radius:var(--r);border:2px solid var(--yellow-d);margin:10px 0 14px}
+.buckets{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.bucket{background:var(--blue);color:#fff;border:0;border-radius:14px;padding:16px 10px;font-weight:800;min-height:64px}
+.bucket:hover:not(:disabled){background:var(--blue-d)}
+.bucket.right{background:var(--ok)}
+.bucket.wrong{background:var(--bad)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.list{display:grid;gap:10px}
+details.t{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:0}
+details.t summary{padding:12px 14px;font-weight:700;cursor:pointer;min-height:48px;display:flex;align-items:center;gap:8px}
+details.t[open]{border-color:var(--blue)}
+details.t .d{padding:0 14px 14px;color:var(--ink)}
+details.t .d p{margin:.3em 0}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line);flex:none}
+.dot.m{background:var(--ok)}
+input[type=search]{width:100%;border:2px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.hint{color:var(--muted);font-size:.92rem;margin:0 0 4px}
+.model{background:var(--blue-l);border-radius:12px;padding:12px 14px;margin:8px 0}
+.model p{margin:.2em 0}
+.prog{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:4px 0 10px}
+.prog>i{display:block;height:100%;background:var(--blue)}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{border:2px dashed var(--line);border-radius:14px;padding:10px;text-align:center;color:var(--muted);font-size:.88rem}
+.badge.on{border:2px solid var(--yellow-d);background:#fff8d6;color:var(--ink)}
+.badge .em{font-size:1.8rem;display:block;filter:grayscale(1);opacity:.45}
+.badge.on .em{filter:none;opacity:1}
+.stars{font-size:2.4rem;letter-spacing:6px;color:var(--yellow-d)}
+.center{text-align:center}
+.done-tag{color:var(--ok);font-weight:800}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:14px;z-index:30;transition:transform .3s;max-width:90vw;text-align:center;font-weight:700}
+#toast.show{transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:20}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.hero{background:linear-gradient(135deg,#0b3c5d,#16899a);color:#fff;border-radius:var(--r);padding:8px 20px 14px;margin-bottom:16px}
+.hero h2{margin-top:.5em}.hero p{margin:0;opacity:.95}
+.slots{margin:6px 0;padding-left:30px}
+.slot{background:var(--ok-bg);border:2px solid var(--ok);color:#0d4a1f;border-radius:12px;padding:8px 12px;margin:6px 0;font-weight:600}
+.pool{display:grid;gap:10px}
+.transcript{display:grid;gap:8px;margin-top:14px}
+.pl{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:14px;padding:10px 14px;background:var(--card)}
+.pl b{display:block}
+.pl small{display:block;color:var(--muted)}
+.pl.host{background:var(--blue-l);margin-right:12%}
+.pl.exp{background:#fff8d6;margin-left:12%}
+.pl.host b,.pl.exp b{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.pl.now{border-color:var(--blue);box-shadow:0 0 0 3px rgba(15,107,120,.35);background:var(--blue-l)}
+.ex{background:#fff8d6;border-left:4px solid var(--yellow-d);border-radius:8px;padding:8px 12px;margin:8px 0}
+.links{margin-top:10px}
+.linkrow{display:block;width:100%;text-align:left;background:var(--blue-l);border:0;border-radius:10px;padding:8px 12px;margin:6px 0;min-height:44px}
+.linkrow:hover{background:#cbe7ea}
+.rate{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:14px}
+.ask{margin:10px 0 4px;padding-left:22px}
+.ask li{margin:4px 0}
+.log{margin-top:14px;display:grid;gap:8px}
+.ext a{color:var(--blue-d);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div class="hud">
+    <button class="iconbtn" id="back" aria-label="Tillbaka till menyn" hidden>←</button>
+    <h1>🌍 Jordens krafter</h1>
+    <div class="lvl">
+      <small id="lvlname"></small>
+      <div class="bar" role="progressbar" aria-label="Erfarenhetspoäng till nästa nivå" aria-valuemin="0" aria-valuemax="100" id="xpbar"><i id="xpfill"></i></div>
+    </div>
+    <button class="iconbtn" id="snd" aria-label="Ljud av/på" aria-pressed="true">🔊</button>
+  </div>
+</header>
+<main id="app"></main>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ===DATA-START=== */
+/* ============ DATA (från Geografibegrepp – Jordens krafter.pdf) ============ */
+const SECTIONS={1:"Kartor & koordinater",2:"Solen & årstiderna",3:"Väder & stormar",4:"Vindar & havsströmmar",5:"Klimat & natur"};
+const TERMS=[
+{"sec":3,"t":"Atmosfären","d":"Området mellan jordytan och rymden.","e":"Utan atmosfären skulle jorden sakna syre att andas och skydd mot farlig solstrålning, precis som en osynlig skyddsfilt av gaser runt planeten."},
+{"sec":1,"t":"Breddgrad","d":"Uppdelning av jordklotet i 90 grader nordlig och sydlig bredd.","e":"Genom att mäta en plats breddgrad norr eller söder om ekvatorn kan man avgöra hur varmt klimatet brukar vara, eftersom solstrålarna träffar jorden mer snett ju högre gradtalet är."},
+{"sec":1,"t":"Ekvatorn","d":"Den breddgrad som är midjan på jorden.","e":"Vid ekvatorn (breddgrad 0°) träffar solens strålar jorden rakt framifrån året runt, vilket gör att det alltid är varmt och att dag och natt är ungefär 12 timmar vardera."},
+{"sec":5,"t":"Glaciär","d":"Is som ligger på land och är i rörelse, till skillnad från inlandsis, som ligger stilla.","e":"När snö packas ihop under tusentals år på ett högt berg bildas en glaciär som är så tung att den sakta glider nedför dalgången och slipar berggrunden under sig.","s":"Is på land som är i rörelse (inlandsis ligger stilla)"},
+{"sec":4,"t":"Golfströmmen","d":"Havsström från ekvatorn som gör Sveriges klimat varmare.","e":"Trots att Sverige ligger lika långt norrut som det iskalla Alaska har vi betydligt mildare vintrar eftersom Golfströmmen för med sig varmt ytvatten ända från Mexikanska golfen upp längs Norges kust."},
+{"sec":5,"t":"Grundvatten","d":"Det vatten som finns lagrat i marken.","e":"När regn och smält snö sjunker ner genom jordlagren fylls grundvattnet på, vilket fungerar som en underjordisk vattenreservoar som vi hämtar vårt dricksvatten ur via brunnar."},
+{"sec":4,"t":"Havsström","d":"Transport av vatten i världshaven.","e":"Vindar, jordens rotation och skillnader i vattnets temperatur och salthalt skapar en havsström, som fungerar likt en gigantisk flod i havet som sprider värme runt jorden.","s":"Transport av vatten i världshaven"},
+{"sec":3,"t":"Högtryck","d":"Område där nedkyld, torr luft sjunker mot jordytan.","e":"Eftersom luften i ett högtryck sjunker nedåt värms den upp och eventuella moln löses upp, vilket brukar ge klart, soligt och vindstilla väder."},
+{"sec":5,"t":"Inlandsklimat","d":"Klimat med varma, torra somrar och kalla vintrar.","e":"Långt inne på en kontinent, som i centrala Ryssland, råder inlandsklimat eftersom det inte finns något hav i närheten som kan kyla ner luften på sommaren eller värma upp den på vintern."},
+{"sec":4,"t":"Intertropiska konvergenszonen","d":"Det bälte runt jorden där nordostpassaden och sydostpassaden möts.","e":"Runt ekvatorn pressas varm och fuktig luft uppåt när vindarna möts i den intertropiska konvergenszonen, vilket får luften att kylas av och bilda kraftiga regnmoln nästan varje dag.","s":"Bältet runt jorden där nordostpassaden och sydostpassaden möts"},
+{"sec":3,"t":"Klimat","d":"Vädret under 30 år ligger till grund för de beräkningar som meteorologer gör för att bestämma en plats klimat.","e":"Även om det råkar vara ovanligt kallt och regnigt en enskild juli-vecka har Medelhavsområdet ändå ett varmt och torrt klimat, eftersom det är genomsnittet över minst 30 år som räknas.","s":"Vädrets genomsnitt över minst 30 år"},
+{"sec":5,"t":"Klimatzon","d":"Ett område på jorden där alla platser har ungefär samma klimat. Det finns fyra olika klimatzoner.","e":"Beroende på hur mycket solenergi som når olika delar av jorden delas världen in i fyra klimatzoner: tropiska, subtropiska, tempererade (där Sverige ligger) och polarzonen.","s":"Område där alla platser har ungefär samma klimat – det finns fyra"},
+{"sec":1,"t":"Koordinat","d":"Tal som anger en punkt på en karta där längd- och breddgrader möts.","e":"Genom att kombinera en nordlig/sydlig och en östlig/västlig koordinat kan en GPS peka ut en exakt plats var som helst på jordklotet med några meters noggrannhet."},
+{"sec":5,"t":"Kustklimat","d":"Klimat med kalla, fuktiga somrar och milda vintrar.","e":"Eftersom havet värms upp och kyls ner mycket långsammare än land får städer som Göteborg och Bergen ett kustklimat, där havet dämpar både sommarhettan och vinterkylan."},
+{"sec":3,"t":"Lågtryck","d":"Område där uppvärmd, fuktig luft stiger från jordytan.","e":"När varm luft stiger uppåt i ett lågtryck kyls den ner på hög höjd så att vattenångan bildar moln, vilket oftast leder till blåsigt och regnigt väder."},
+{"sec":1,"t":"Längdgrad","d":"Uppdelning av jordklotet i 180 grader östlig och västlig längd.","e":"Varje längdgrad löper som en apelsinklyfta från nordpolen till sydpolen och avgör vilken tidszon en plats tillhör beroende på hur långt öster eller väster om Greenwich den ligger."},
+{"sec":1,"t":"Meridian","d":"Annat namn för längdgrad, används oftast bara om nollmeridianen.","e":"Alla linjer på kartan som går rakt från pol till pol är en meridian, och utifrån den viktigaste av dem – nollmeridianen – räknas både östliga och västliga längdgrader samt världens tidszoner.","s":"Annat namn för längdgrad, oftast om nollmeridianen"},
+{"sec":4,"t":"Monsun","d":"Vind som blåser åt ett håll på sommaren och det motsatta på vintern, drar med sig regn från havet.","e":"På sommaren värms den asiatiska kontinenten upp snabbare än havet, vilket drar in en fuktig monsun från Indiska oceanen som ger livsviktigt regn till risodlingarna, medan vinden vänder och ger torka på vintern.","s":"Vind som byter håll mellan sommar och vinter och drar med sig regn från havet"},
+{"sec":3,"t":"Nederbörd","d":"Samlingsnamn för regn, snö och hagel.","e":"När vattendroppar eller iskristaller i ett moln blir så tunga att luften inte längre orkar hålla dem uppe faller de till marken som nederbörd."},
+{"sec":1,"t":"Nollmeridianen","d":"Den längdgrad som går genom Greenwich och som är längdgrad 0.","e":"Precis som ekvatorn är startlinjen för breddgrader utgör nollmeridianen i London startlinjen (0°) varifrån man mäter avståndet österut och västerut runt jordklotet."},
+{"sec":3,"t":"Orkan","d":"Stort stormoväder som uppstår över varmt hav.","e":"När havsvattnet är minst 26–27 grader varmt stiger enorma mängder fuktig luft uppåt och börjar rotera, vilket kan utvecklas till en förödande orkan med extrema vindstyrkor och skyfall."},
+{"sec":4,"t":"Passadvind","d":"Vind som alltid blåser från samma håll kring ekvatorn: norr om ekvatorn från nordost, söder om ekvatorn från sydost.","e":"Varm luft som stiger vid ekvatorn ersätts ständigt av luft som strömmar in från subtropiska högtryck och böjs av genom jordens rotation, vilket skapar den pålitliga passadvinden som segelfartyg förr utnyttjade över Atlanten.","s":"Vind som alltid blåser från samma håll kring ekvatorn (nordost/sydost)"},
+{"sec":2,"t":"Polcirkel","d":"Område mellan en viss breddgrad och polen, där solen skiner i 24 timmar under minst en sommardag och där solen inte går upp alls under minst en vinterdag.","e":"Eftersom jordaxeln lutar 23,5 grader hamnar området innanför respektive polcirkel helt vänt mot solen under sommaren (midnattssol) och helt bortvänt från solen under vintern (polarnatt).","s":"Gräns där solen skiner 24 timmar minst en sommardag och uteblir minst en vinterdag"},
+{"sec":5,"t":"Regnperiod","d":"I områden med två årstider är det den del av året då det regnar.","e":"När den intertropiska konvergenszonen förflyttar sig norrut eller söderut under året för den med sig en regnperiod, då floder svämmar över och det torra landskapet snabbt blir grönt."},
+{"sec":5,"t":"Regnskog","d":"Skog som växer i områden där det regnar varje dag under minst nio månader varje år.","e":"Runt ekvatorn, där det är varmt och regnar nästan varje dag året om, växer tät regnskog i flera våningar som rymmer över hälften av världens alla växt- och djurarter.","s":"Skog i område där det regnar varje dag under minst nio månader per år"},
+{"sec":5,"t":"Savann","d":"Område med gräs, buskar och enstaka träd. Ligger mellan regnskogen och stäppen.","e":"På den afrikanska savannen är regnperioden för kort för att en tät skog ska kunna växa, men tillräcklig för att högt gräs och enstaka träd ska ge föda åt stora hjordar av zebror, gnuer och elefanter.","s":"Område med gräs, buskar och enstaka träd mellan regnskog och stäpp"},
+{"sec":2,"t":"Sommarsolstånd","d":"När solen är uppe som längst på sommaren, omkring 21 juni.","e":"Vid sommarsolståndet lutar norra halvklotet som allra mest in mot solen, vilket ger oss årets längsta dag och ljusaste natt.","s":"När solen är uppe som längst på sommaren, omkring 21 juni"},
+{"sec":5,"t":"Stäpp","d":"Område med gräs och enstaka buskar. Ligger mellan öknen och savannen.","e":"Där det regnar för lite för att träd ska klara sig, men ändå mer än i en öken, breder en torr stäpp ut sig med tåligt gräs och låga buskar.","s":"Område med gräs och enstaka buskar mellan öken och savann"},
+{"sec":1,"t":"Topografisk karta","d":"Karta som visar höjdskillnader med höjdkurvor.","e":"När man tittar på en topografisk karta ser man direkt var bergen är som brantast, eftersom höjdkurvorna då ligger mycket tätt intill varandra."},
+{"sec":5,"t":"Torrperiod","d":"I områden med två årstider är det den halva av året då det inte regnar.","e":"Under torrperioden på savannen faller inget regn på flera månader, vilket gör att gräset vissnar och många djur tvingas vandra långt för att hitta vattenhål."},
+{"sec":3,"t":"Tromb","d":"Annat namn för virvelvind.","e":"När en kraftig virvelvind uppstår över land, till exempel under ett sommaråskväder i Sverige, används ofta begreppet tromb istället för tornado."},
+{"sec":2,"t":"Tropikerna","d":"Området mellan vändkretsarna.","e":"I tropikerna, bältet runt ekvatorn mellan Kräftans och Stenbockens vändkrets, står solen högt på himlen året runt så att det aldrig blir någon kall vinter."},
+{"sec":3,"t":"Troposfären","d":"Den del av atmosfären som ligger närmast jordytan. Innehåller vindar, regn och annat väder som påverkar oss.","e":"Allt det vi kallar väder – som moln, regnskurar, åska och vindar – utspelar sig i troposfären, eftersom det är där nästan all vattenånga och luftmassa finns samlad.","s":"Atmosfärens nedersta del, där vädret finns"},
+{"sec":3,"t":"Tyfon","d":"Samma sak som orkan fast i Stilla havet eller Indiska oceanen.","e":"Det är exakt samma typ av kraftiga tropiska stormoväder som i Atlanten, men när den bildas över varmt hav i Asien och drabbar exempelvis Japan eller Filippinerna kallas den för en tyfon.","s":"Samma sak som orkan, fast i Stilla havet eller Indiska oceanen"},
+{"sec":3,"t":"Varmfront","d":"Varm luftmassa som rör sig framåt.","e":"Eftersom varm luft är lättare än kall glider en varmfront sakta upp ovanpå den kalla luften framför den, vilket först märks som höga slöjmoln och därefter ett långvarigt, stilla regn."},
+{"sec":2,"t":"Vintersolstånd","d":"När solen är uppe som kortast tid på vintern, omkring 21 december.","e":"Vid vintersolståndet lutar norra halvklotet som mest bort från solen, vilket gör att dagen är som kortast och att det efter detta datum sakta börjar bli ljusare igen.","s":"När solen är uppe som kortast på vintern, omkring 21 december"},
+{"sec":2,"t":"Vårdagjämning","d":"Den dag på våren då jordaxeln ligger i 90 graders vinkel mot solen. Hela jorden har tolv timmar natt och tolv timmar dag.","e":"Vid vårdagjämningen omkring den 20 mars lutar varken norra eller södra halvklotet mot solen, vilket gör att dag och natt är exakt lika långa över hela jorden.","s":"Dagen på våren då dag och natt är lika långa över hela jorden"},
+{"sec":3,"t":"Väder","d":"Den nederbörd, temperatur och det solsken vi har utanför fönstret just nu.","e":"Till skillnad från klimatet som mäts över 30 år ändras väder från timme till timme, som när en solig morgon övergår i regn och blåst på eftermiddagen."},
+{"sec":1,"t":"Väderstreck","d":"Samlingsnamn för norr, söder, öster och väster.","e":"Med hjälp av solens position eller en kompass kan man ta ut de fyra väderstrecken för att veta åt vilket håll man ska gå när man orienterar sig i naturen."},
+{"sec":2,"t":"Vändkrets","d":"Breddgraderna 23,5 grader norr och söder om ekvatorn. Norra vändkretsen heter Kräftans vändkrets, södra heter Stenbockens vändkrets.","e":"Eftersom jordaxeln lutar 23,5 grader markerar varje vändkrets den nordligaste och sydligaste gränsen på jorden där solen någonsin kan stå helt rakt upp på himlen.","s":"Breddgraderna 23,5° norr och söder om ekvatorn"},
+{"sec":4,"t":"Västvindsbältet","d":"Område runt 40:e–60:e breddgraden där vindarna ofta blåser från väst. Gör att vi i Sverige ofta har vind från väst.","e":"Eftersom Sverige ligger mitt i västvindsbältet blåser de flesta vindar och lågtryck in mot oss från Atlanten i väster, vilket för med sig fuktig och mild havsluft.","s":"Område kring 40:e–60:e breddgraden med ofta västliga vindar"},
+{"sec":2,"t":"Zenit","d":"När solen står rakt ovanför betraktaren. Solen kan bara stå i zenit i tropikerna.","e":"När solen står i zenit (90 grader rakt upp på himlen) träffar solstrålarna marken rakt uppifrån utan att spridas ut, vilket ger maximal värme och gör att föremål inte kastar någon skugga åt sidorna.","s":"När solen står rakt ovanför betraktaren"},
+{"sec":2,"t":"Årstid","d":"Del av år. I Sverige har vi vår, sommar, höst och vinter.","e":"Eftersom jordaxeln lutar medan jorden snurrar ett varv runt solen växlar mängden solljus under året, vilket ger oss våra fyra tydliga årstider."},
+{"sec":5,"t":"Ökenspridning","d":"När en öken ökar i yta på bekostnad av omgivande mark.","e":"När boskap betar bort för mycket växter i torra gränsområden som Sahel blåser den bördiga matjorden bort, vilket leder till ökenspridning där savann och stäpp förvandlas till öken."}
+].map((x,i)=>({...x,id:"t"+i}));
+const BYNAME=Object.fromEntries(TERMS.map(t=>[t.t,t]));
+const BYID=Object.fromEntries(TERMS.map(t=>[t.id,t]));
+const READY=Math.ceil(TERMS.length*.8);
+const short=t=>t.s||t.d;
+
+/* Matchning av begrepp i text (böjningar), används för att dölja svaret i frågor */
+const TERM_RE={"Klimat":"klimat(?:et|ets|s)?(?![\\p{L}])","Väder":"väd(?:er|ret|rets|ers)?(?![\\p{L}])"};
+const stemOf=w=>w.toLowerCase().replace(/(erna|arna|orna|en|et|n|t|a|e)$/,"");
+function termSrc(t){
+  if(TERM_RE[t.t])return TERM_RE[t.t];
+  return t.t.split(" ").map(w=>stemOf(w)+"\\p{L}*").join("[^\\p{L}]+");
+}
+TERMS.forEach(t=>{const s=termSrc(t);t.re=new RegExp("(^|[^\\p{L}])("+s+")","iu");t.reg=new RegExp("(^|[^\\p{L}])("+s+")","giu")});
+const mentions=(text,t)=>t.re.test(text);
+const mask=(text,t)=>text.replace(t.reg,(m,p)=>p+"_____");
+
+/* Sammanhang: vilka begrepp hänger ihop, och hur. Båda begreppen står i meningen. */
+const LINKS_RAW=[
+["Ekvatorn","Breddgrad","Ekvatorn är breddgrad 0° – startlinjen som alla breddgrader mäts ifrån."],
+["Nollmeridianen","Längdgrad","Nollmeridianen är längdgrad 0° – startlinjen som alla längdgrader mäts ifrån."],
+["Meridian","Längdgrad","Meridian är ett annat namn för längdgrad."],
+["Meridian","Nollmeridianen","Nollmeridianen är den viktigaste av alla meridianer och går genom Greenwich."],
+["Koordinat","Breddgrad","En koordinat pekar ut en plats genom att kombinera breddgrad (norr/söder) med längdgrad (öster/väster)."],
+["Koordinat","Längdgrad","Längdgraden är ena halvan av en koordinat – den visar hur långt öster eller väster en plats ligger."],
+["Väderstreck","Breddgrad","Breddgrader mäts mot väderstrecken norr och söder, längdgrader mot öster och väster."],
+["Topografisk karta","Väderstreck","Med en topografisk karta och de fyra väderstrecken kan man orientera sig i naturen."],
+["Tropikerna","Ekvatorn","Tropikerna är bältet runt ekvatorn, mellan vändkretsarna."],
+["Tropikerna","Vändkrets","Tropikerna ligger mellan Kräftans och Stenbockens vändkrets."],
+["Zenit","Tropikerna","Solen kan bara stå i zenit i tropikerna."],
+["Zenit","Vändkrets","Vändkretsarna är gränsen för hur långt från ekvatorn solen någonsin kan stå i zenit."],
+["Vändkrets","Breddgrad","Vändkretsarna är breddgraderna 23,5° norr och söder om ekvatorn."],
+["Polcirkel","Breddgrad","Polcirkeln är en viss breddgrad; innanför den finns midnattssol och polarnatt."],
+["Polcirkel","Vintersolstånd","Vid vintersolståndet lutar norra halvklotet som mest bort från solen, och innanför polcirkeln är det då polarnatt."],
+["Sommarsolstånd","Vintersolstånd","Sommarsolståndet (omkring 21 juni) är årets längsta dag och vintersolståndet (omkring 21 december) årets kortaste."],
+["Vårdagjämning","Ekvatorn","Vid vårdagjämningen är dag och natt lika långa över hela jorden – precis som vid ekvatorn hela året."],
+["Årstid","Sommarsolstånd","Årstiderna växlar eftersom jordaxeln lutar – vid sommarsolståndet lutar norra halvklotet mest in mot solen."],
+["Atmosfären","Troposfären","Troposfären är den nedersta delen av atmosfären, närmast jordytan."],
+["Troposfären","Väder","Allt väder – moln, regn, åska och vind – utspelar sig i troposfären."],
+["Väder","Klimat","Vädret är det som händer just nu, klimatet är genomsnittet av vädret över minst 30 år."],
+["Väder","Nederbörd","Nederbörd, till exempel regn eller snö, är en del av vädret."],
+["Nederbörd","Lågtryck","I ett lågtryck stiger fuktig luft och bildar moln, vilket oftast ger nederbörd."],
+["Högtryck","Lågtryck","Ett högtryck har sjunkande luft och klart väder, ett lågtryck har stigande luft, moln och regn."],
+["Varmfront","Nederbörd","När en varmfront närmar sig kommer först höga slöjmoln och sedan långvarig, stilla nederbörd."],
+["Högtryck","Passadvind","Passadvinden får sin luft från de subtropiska högtrycken, som strömmar in mot ekvatorn."],
+["Lågtryck","Västvindsbältet","Eftersom Sverige ligger i västvindsbältet kommer många lågtryck in från Atlanten i väster."],
+["Orkan","Tyfon","En tyfon är samma sak som en orkan, fast i Stilla havet eller Indiska oceanen."],
+["Tromb","Orkan","En tromb är en virvelvind över land, medan en orkan växer upp över varmt hav."],
+["Passadvind","Intertropiska konvergenszonen","Nordostpassaden och sydostpassaden – passadvindarna – möts i den intertropiska konvergenszonen."],
+["Intertropiska konvergenszonen","Regnskog","I den intertropiska konvergenszonen pressas varm, fuktig luft uppåt och det regnar nästan varje dag – därför växer regnskog där."],
+["Intertropiska konvergenszonen","Regnperiod","När den intertropiska konvergenszonen flyttar sig norrut eller söderut följer regnperioden med."],
+["Intertropiska konvergenszonen","Ekvatorn","Den intertropiska konvergenszonen ligger som ett bälte runt ekvatorn."],
+["Västvindsbältet","Breddgrad","Västvindsbältet ligger runt 40:e–60:e breddgraden."],
+["Västvindsbältet","Golfströmmen","I västvindsbältet blåser vindarna in från Atlanten och för med sig värmen från Golfströmmen till Sverige."],
+["Golfströmmen","Havsström","Golfströmmen är en havsström som för varmt ytvatten från Mexikanska golfen norrut."],
+["Havsström","Klimat","Havsströmmar sprider värme runt jorden och påverkar därför klimatet."],
+["Monsun","Regnperiod","Monsunen ger Asien en regnperiod på sommaren."],
+["Monsun","Torrperiod","När monsunen vänder på vintern blir det torrperiod i Asien."],
+["Monsun","Passadvind","Passadvinden blåser alltid från samma håll, men monsunen byter håll mellan sommar och vinter."],
+["Klimat","Klimatzon","I en klimatzon har alla platser ungefär samma klimat."],
+["Klimatzon","Breddgrad","Solstrålarna träffar jorden olika snett på olika breddgrader, och det ger olika klimatzoner."],
+["Tropikerna","Klimatzon","I tropikerna, den varmaste klimatzonen, står solen högt på himlen hela året."],
+["Kustklimat","Inlandsklimat","Kustklimat har milda vintrar och kalla, fuktiga somrar, medan inlandsklimat har varma, torra somrar och kalla vintrar."],
+["Regnskog","Savann","Savannen ligger närmast regnskogen, men regnperioden är för kort för att tät skog ska växa."],
+["Savann","Stäpp","Stäppen ligger närmare öknen än savannen – där regnar det för lite för att träd ska klara sig."],
+["Savann","Torrperiod","Under torrperioden på savannen vissnar gräset och djuren vandrar för att hitta vatten."],
+["Regnperiod","Torrperiod","Regnperiod och torrperiod är de två delarna av året i områden med två årstider."],
+["Ökenspridning","Savann","Där boskap betar för mycket i torra områden förvandlas savann till öken – det kallas ökenspridning."],
+["Ökenspridning","Stäpp","Ökenspridning gör att stäpp och savann förvandlas till öken."],
+["Regnskog","Ekvatorn","Regnskog växer runt ekvatorn, där det är varmt och regnar nästan varje dag."],
+["Glaciär","Nederbörd","En glaciär bildas av snö (en sorts nederbörd) som packas ihop under tusentals år."],
+["Grundvatten","Nederbörd","Regn och smält snö – nederbörd – sjunker ner i marken och fyller på grundvattnet."]
+];
+const LINKS=LINKS_RAW.map(([a,b,why],i)=>{
+  if(!BYNAME[a]||!BYNAME[b])throw new Error("Okänt begrepp i LINKS: "+a+" / "+b);
+  return{id:"l"+i,a:BYNAME[a].id,b:BYNAME[b].id,why};
+});
+const NB=new Map();
+LINKS.forEach(l=>{
+  (NB.get(l.a)||NB.set(l.a,[]).get(l.a)).push({o:BYID[l.b],why:l.why,l});
+  (NB.get(l.b)||NB.set(l.b,[]).get(l.b)).push({o:BYID[l.a],why:l.why,l});
+});
+const adjacent=(x,y)=>(NB.get(x)||[]).some(n=>n.o.id===y);
+/* begrepp som betyder ungefär samma sak får aldrig vara felaktiga alternativ till varandra */
+const SYN_GROUPS=[["Meridian","Längdgrad","Nollmeridianen"],["Orkan","Tyfon"]];
+const isSyn=(x,y)=>SYN_GROUPS.some(g=>g.includes(x.t)&&g.includes(y.t));
+
+const FACTS=[
+{sec:1,q:"Hur många grader nordlig och sydlig bredd delas jordklotet in i?",a:"90 grader",w:["180 grader","360 grader","23,5 grader"],e:"Breddgraderna går från 0° vid ekvatorn till 90° vid polerna."},
+{sec:1,q:"Hur många grader östlig och västlig längd delas jordklotet in i?",a:"180 grader",w:["90 grader","360 grader","23,5 grader"],e:"Längdgraderna räknas 180° österut och 180° västerut från nollmeridianen."},
+{sec:1,q:"Genom vilken plats går nollmeridianen?",a:"Greenwich i London",w:["Paris","Rom","Stockholm"],e:"Nollmeridianen går genom Greenwich och är längdgrad 0."},
+{sec:1,q:"Vad avgör vilken tidszon en plats tillhör?",a:"Längdgraden – hur långt öster eller väster om Greenwich platsen ligger",w:["Breddgraden","Höjden över havet","Avståndet till havet"],e:"Längdgraderna (meridianerna) avgör tidszonerna."},
+{sec:1,q:"Vad visar höjdkurvor som ligger tätt intill varandra på en topografisk karta?",a:"Att det är brant",w:["Att det är platt","Att det är en sjö","Att det finns en väg"],e:"Täta höjdkurvor betyder stora höjdskillnader, alltså brant terräng."},
+{sec:1,q:"Vad behövs för att peka ut en exakt plats med koordinater?",a:"Både en breddgrad och en längdgrad",w:["Bara en breddgrad","Bara en längdgrad","Bara höjden över havet"],e:"En koordinat är punkten där en längdgrad och en breddgrad möts."},
+{sec:2,q:"Hur många grader lutar jordaxeln?",a:"23,5 grader",w:["90 grader","66,5 grader","10 grader"],e:"Jordaxeln lutar 23,5 grader – därför får vi årstider, vändkretsar och polcirklar."},
+{sec:2,q:"Var ligger vändkretsarna?",a:"På breddgraderna 23,5° norr och söder om ekvatorn",w:["Vid nordpolen och sydpolen","Längs nollmeridianen","Precis på ekvatorn"],e:"Vändkretsarna är breddgraderna 23,5° norr och söder om ekvatorn."},
+{sec:2,q:"Vad heter den norra och den södra vändkretsen?",a:"Kräftans vändkrets och Stenbockens vändkrets",w:["Lejonets och Skorpionens vändkrets","Vädurens och Vågens vändkrets","Norra och södra polcirkeln"],e:"Norra vändkretsen heter Kräftans, södra heter Stenbockens."},
+{sec:2,q:"Var på jorden kan solen stå i zenit?",a:"Bara i tropikerna",w:["Överallt på jorden","Bara vid polerna","Bara i Sverige på sommaren"],e:"Solen kan bara stå rakt ovanför oss mellan vändkretsarna."},
+{sec:2,q:"Hur långa är dag och natt vid ekvatorn?",a:"Ungefär 12 timmar vardera, hela året",w:["24 timmars dag på sommaren","Mycket längre natt på vintern","De varierar lika mycket som i Sverige"],e:"Vid ekvatorn träffar solen rakt framifrån året runt, så dag och natt är ungefär lika långa."},
+{sec:2,q:"När är sommarsolståndet?",a:"Omkring 21 juni",w:["Omkring 20 mars","Omkring 21 december","Omkring 1 maj"],e:"Sommarsolståndet (omkring 21 juni) ger årets längsta dag."},
+{sec:2,q:"Vad är speciellt med vårdagjämningen?",a:"Dag och natt är lika långa över hela jorden",w:["Det är årets längsta dag","Solen går inte ned alls","Det är årets kortaste dag"],e:"Vid vårdagjämningen (omkring 20 mars) lutar varken norra eller södra halvklotet mot solen."},
+{sec:2,q:"Vad kallas det när solen skiner dygnet runt innanför polcirkeln på sommaren?",a:"Midnattssol",w:["Polarnatt","Nordsken","Zenit"],e:"Midnattssol på sommaren, polarnatt på vintern – på grund av jordaxelns lutning."},
+{sec:2,q:"Varför har vi årstider?",a:"Jordaxeln lutar medan jorden snurrar runt solen",w:["Jorden är närmare solen på sommaren","Solen blir starkare och svagare","Jorden stannar upp ibland"],e:"Det är jordaxelns lutning som gör att mängden solljus växlar under året."},
+{sec:3,q:"Vilken del av atmosfären innehåller vädret?",a:"Troposfären",w:["Rymden","Stratosfären","Havet"],e:"Moln, regn, åska och vind finns i troposfären, närmast jordytan."},
+{sec:3,q:"Hur länge måste man mäta vädret för att få fram klimatet?",a:"Minst 30 år",w:["Ett år","En månad","Tio år"],e:"Klimat är vädrets genomsnitt över minst 30 år."},
+{sec:3,q:"Vad händer med luften i ett högtryck?",a:"Den sjunker mot jordytan och värms upp",w:["Den stiger och bildar moln","Den står helt still","Den blir fuktigare och tyngre"],e:"Sjunkande luft värms upp, molnen löses upp och det blir klart och soligt."},
+{sec:3,q:"Vilket väder ger ett lågtryck oftast?",a:"Blåsigt och regnigt",w:["Klart och soligt","Vindstilla och torrt","Dimma utan vind"],e:"I ett lågtryck stiger varm, fuktig luft och bildar moln."},
+{sec:3,q:"Vad är nederbörd?",a:"Regn, snö och hagel",w:["Bara regn","Vattenånga i luften","Vatten som finns lagrat i marken"],e:"Nederbörd är samlingsnamn för regn, snö och hagel."},
+{sec:3,q:"Hur varmt måste havsvattnet minst vara för att en orkan ska kunna bildas?",a:"Ungefär 26–27 grader",w:["Ungefär 5 grader","Ungefär 10 grader","Ungefär 50 grader"],e:"Varmt hav ger enorma mängder fuktig luft som stiger och börjar rotera."},
+{sec:3,q:"Vad kallas en orkan som bildas över Stilla havet eller Indiska oceanen?",a:"Tyfon",w:["Tromb","Monsun","Passadvind"],e:"Tyfon är samma sak som orkan, fast i Stilla havet eller Indiska oceanen."},
+{sec:3,q:"Vad händer när en varmfront närmar sig?",a:"Först höga slöjmoln, sedan långvarigt, stilla regn",w:["Plötsligt skyfall och sedan sol","Klart väder och starkt solsken","Åska och hagel direkt"],e:"Varm luft glider sakta upp ovanpå den kalla luften framför den."},
+{sec:3,q:"Vad kallas en virvelvind över land, till exempel under ett sommaråskväder?",a:"Tromb",w:["Tyfon","Orkan","Monsun"],e:"Tromb är ett annat namn för virvelvind."},
+{sec:4,q:"Varför har Sverige mildare vintrar än Alaska, trots att de ligger lika långt norrut?",a:"Golfströmmen för med varmt ytvatten norrut",w:["Sverige ligger närmare ekvatorn","Solen lyser starkare över Sverige","Alaska ligger högre över havet"],e:"Golfströmmen för varmt ytvatten från Mexikanska golfen längs Norges kust."},
+{sec:4,q:"Varifrån kommer de flesta vindar och lågtryck som når Sverige?",a:"Från väst, över Atlanten",w:["Från öst, över Ryssland","Från norr, över Arktis","Från söder, över Medelhavet"],e:"Sverige ligger i västvindsbältet, så vi får ofta fuktig och mild havsluft från Atlanten."},
+{sec:4,q:"Vad skapar en havsström?",a:"Vindar, jordens rotation och skillnader i vattnets temperatur och salthalt",w:["Bara månens dragningskraft","Bara floder som rinner ut i havet","Bara ebb och flod"],e:"En havsström är som en gigantisk flod i havet som sprider värme runt jorden."},
+{sec:4,q:"Vilka vindar möts i den intertropiska konvergenszonen?",a:"Nordostpassaden och sydostpassaden",w:["Västvindarna och monsunen","Varmfronten och kallfronten","Orkanen och tyfonen"],e:"Zonen är bältet runt jorden där de två passadvindarna möts."},
+{sec:4,q:"Varför får man kraftiga regnmoln där vindarna möts vid ekvatorn?",a:"Varm, fuktig luft pressas uppåt, kyls av och bildar moln",w:["Kall luft sjunker och bildar dimma","Havsströmmar värmer luften","Solen tränger undan molnen"],e:"Därför regnar det nästan varje dag runt ekvatorn."},
+{sec:4,q:"Varför ger monsunen regn på sommaren i Asien?",a:"Landet värms upp snabbare än havet och drar in fuktig luft från havet",w:["Havet värms upp snabbare än landet","Passadvinden blåser från land","Golfströmmen når Asien"],e:"På vintern vänder vinden och det blir torka."},
+{sec:4,q:"Från vilket håll blåser passadvinden norr om ekvatorn?",a:"Från nordost",w:["Från sydost","Från väst","Från norr"],e:"Norr om ekvatorn blåser den från nordost, söder om ekvatorn från sydost."},
+{sec:5,q:"Hur många klimatzoner finns det, och i vilken ligger Sverige?",a:"Fyra – Sverige ligger i den tempererade",w:["Tre – Sverige ligger i den tropiska","Fyra – Sverige ligger i polarzonen","Fem – Sverige ligger i den subtropiska"],e:"Zonerna är tropiska, subtropiska, tempererade (Sverige) och polarzonen."},
+{sec:5,q:"Varför får Göteborg ett kustklimat?",a:"Havet värms upp och kyls ner långsammare än land och dämpar både sommarhetta och vinterkyla",w:["Göteborg ligger nära ekvatorn","Det finns inget hav i närheten","Göteborg ligger högt över havet"],e:"Havet fungerar som en temperaturdämpare."},
+{sec:5,q:"Vilket klimat har centrala Ryssland?",a:"Inlandsklimat – varma, torra somrar och kalla vintrar",w:["Kustklimat – milda vintrar","Tropiskt klimat","Polarklimat"],e:"Långt från havet finns inget som kyler på sommaren eller värmer på vintern."},
+{sec:5,q:"Hur ofta regnar det i en regnskog?",a:"Varje dag under minst nio månader per år",w:["En gång i månaden","Bara på sommaren","Nästan aldrig"],e:"Regnskogen rymmer över hälften av världens växt- och djurarter."},
+{sec:5,q:"Vilken ordning har naturtyperna från mest till minst regn?",a:"Regnskog – savann – stäpp – öken",w:["Öken – stäpp – savann – regnskog","Savann – regnskog – öken – stäpp","Stäpp – regnskog – öken – savann"],e:"Savannen ligger mellan regnskogen och stäppen, stäppen mellan savannen och öknen."},
+{sec:5,q:"Vad händer under torrperioden på savannen?",a:"Gräset vissnar och djuren vandrar för att hitta vatten",w:["Floderna svämmar över","Landskapet blir snabbt grönt","Tät regnskog växer upp"],e:"Under regnperioden är det tvärtom – floder svämmar över och landskapet blir grönt."},
+{sec:5,q:"Vad orsakar ökenspridning i torra gränsområden som Sahel?",a:"Boskap betar bort växterna så att matjorden blåser bort",w:["Havet stiger över land","För mycket regn sköljer bort marken","Glaciärer smälter"],e:"Då förvandlas savann och stäpp till öken."},
+{sec:5,q:"Vad skiljer en glaciär från inlandsis?",a:"Glaciären är i rörelse, inlandsisen ligger stilla",w:["Glaciären ligger i havet","Inlandsisen rör sig, glaciären ligger stilla","Glaciären består av saltvatten"],e:"Båda är is på land, men bara glaciären glider."},
+{sec:5,q:"Hur bildas en glaciär?",a:"Snö packas ihop under tusentals år på ett högt berg",w:["Havsvatten fryser på land","Regn fryser till is på natten","Vinden blåser dit is från polerna"],e:"Glaciären blir så tung att den sakta glider nedför dalgången."},
+{sec:5,q:"Hur fylls grundvattnet på?",a:"Regn och smält snö sjunker ner genom jordlagren",w:["Havsvatten pumpas in i marken","Moln sänker sig mot marken","Glaciärer smälter rakt ner i marken"],e:"Vi hämtar dricksvatten ur grundvattnet via brunnar."}
+].map((x,i)=>({...x,id:"f"+i}));
+
+const SORTS=[
+{id:"tryck",name:"Högtryck eller lågtryck?",em:"🌤️",buckets:["Högtryck","Lågtryck"],items:[
+["Luften sjunker mot jordytan",0],["Nedkyld, torr luft",0],["Molnen löses upp",0],["Klart, soligt väder",0],["Vindstilla väder",0],
+["Uppvärmd, fuktig luft stiger",1],["Vattenånga bildar moln",1],["Blåsigt och regnigt",1],["Luften kyls ner på hög höjd",1],["Ger oftast nederbörd",1]]},
+{id:"kust",name:"Kustklimat eller inlandsklimat?",em:"🌊",buckets:["Kustklimat","Inlandsklimat"],items:[
+["Göteborg",0],["Bergen",0],["Kalla, fuktiga somrar",0],["Milda vintrar",0],["Havet dämpar både sommarhetta och vinterkyla",0],
+["Centrala Ryssland",1],["Varma, torra somrar",1],["Kalla vintrar",1],["Inget hav i närheten",1],["Långt inne på en kontinent",1]]},
+{id:"storm",name:"Orkan, tyfon eller tromb?",em:"🌀",buckets:["Orkan","Tyfon","Tromb"],items:[
+["Bildas över Atlanten",0],["Tropisk storm i Atlanten",0],["Samma sak som tyfon men i Atlanten",0],
+["Drabbar Japan",1],["Drabbar Filippinerna",1],["Bildas över varmt hav i Asien",1],["Stilla havet eller Indiska oceanen",1],
+["Virvelvind över land",2],["Annat namn för virvelvind",2],["Uppstår under ett sommaråskväder i Sverige",2],["Används ofta istället för tornado",2]]},
+{id:"grader",name:"Breddgrad eller längdgrad?",em:"🧭",buckets:["Breddgrad","Längdgrad"],items:[
+["90 grader nordlig och sydlig",0],["Ekvatorn är 0°",0],["Mäts norr eller söder om ekvatorn",0],["Vändkretsarna",0],["Polcirklarna",0],["Avgör hur varmt klimatet brukar vara",0],
+["180 grader östlig och västlig",1],["Nollmeridianen är 0°",1],["Löper från nordpolen till sydpolen",1],["Meridianerna",1],["Avgör vilken tidszon en plats tillhör",1],["Greenwich",1]]},
+{id:"vader",name:"Väder eller klimat?",em:"☁️",buckets:["Väder","Klimat"],items:[
+["Det regnar just nu",0],["Soligt på morgonen, regn och blåst på eftermiddagen",0],["Ändras från timme till timme",0],["Temperaturen utanför fönstret nu",0],["Det blåser kraftigt idag",0],
+["Genomsnitt över minst 30 år",1],["Medelhavet har varma, torra somrar",1],["Sverige ligger i den tempererade zonen",1],["Tropikerna har varmt året runt",1],["Meteorologer beräknar det för en plats",1]]},
+{id:"vind",name:"Passadvind, västvindsbälte eller monsun?",em:"💨",buckets:["Passadvind","Västvindsbältet","Monsun"],items:[
+["Blåser från nordost norr om ekvatorn",0],["Blåser från sydost söder om ekvatorn",0],["Segelfartyg utnyttjade den över Atlanten",0],["Blåser alltid från samma håll",0],
+["Runt 40:e–60:e breddgraden",1],["Ger Sverige ofta västliga vindar",1],["För in mild, fuktig havsluft från Atlanten",1],
+["Byter håll mellan sommar och vinter",2],["Fuktig vind från Indiska oceanen",2],["Ger regn till risodlingarna",2],["Ger torka i Asien på vintern",2]]},
+{id:"dag",name:"Vilken dag på året?",em:"📅",buckets:["Vårdagjämning","Sommarsolstånd","Vintersolstånd"],items:[
+["Omkring 20 mars",0],["Dag och natt är lika långa över hela jorden",0],["Varken norra eller södra halvklotet lutar mot solen",0],["Tolv timmar dag och tolv timmar natt",0],
+["Omkring 21 juni",1],["Årets längsta dag",1],["Årets ljusaste natt",1],["Norra halvklotet lutar mest in mot solen",1],
+["Omkring 21 december",2],["Årets kortaste dag",2],["Norra halvklotet lutar mest bort från solen",2],["Efter detta blir det sakta ljusare igen",2]]},
+{id:"natur",name:"Regnskog, savann eller stäpp?",em:"🌴",buckets:["Regnskog","Savann","Stäpp"],items:[
+["Regnar varje dag under minst nio månader",0],["Tät skog i flera våningar",0],["Över hälften av världens växt- och djurarter",0],["Ligger runt ekvatorn",0],
+["Zebror, gnuer och elefanter",1],["Högt gräs och enstaka träd",1],["Regnperioden är för kort för tät skog",1],["Ligger mellan regnskogen och stäppen",1],
+["Tåligt gräs och låga buskar",2],["Ligger mellan öknen och savannen",2],["För lite regn för träd, men mer än i en öken",2]]},
+{id:"period",name:"Regnperiod eller torrperiod?",em:"🌧️",buckets:["Regnperiod","Torrperiod"],items:[
+["Floder svämmar över",0],["Det torra landskapet blir snabbt grönt",0],["Den del av året då det regnar",0],["Intertropiska konvergenszonen för med sig regnet",0],
+["Gräset vissnar",1],["Inget regn på flera månader",1],["Djur vandrar långt för att hitta vattenhål",1],["Den halva av året då det inte regnar",1]]},
+{id:"zon",name:"Ekvatorn, vändkrets eller polcirkel?",em:"🗺️",buckets:["Ekvatorn","Vändkrets","Polcirkel"],items:[
+["Breddgrad 0°",0],["Jordens midja",0],["Dag och natt ungefär 12 timmar året runt",0],["Solstrålarna träffar rakt framifrån",0],
+["23,5° norr eller söder om ekvatorn",1],["Kräftans vändkrets",1],["Stenbockens vändkrets",1],["Gräns för var solen kan stå i zenit",1],
+["Midnattssol",2],["Polarnatt",2],["Solen skiner 24 timmar minst en sommardag",2],["Solen går inte upp minst en vinterdag",2]]}
+];
+
+const ORDERS=[
+{id:"regnskog",name:"Så blir det regnskog vid ekvatorn",em:"🌴",hint:"Börja med solen.",items:["Solens strålar träffar ekvatorn rakt framifrån","Varm, fuktig luft pressas uppåt när vindarna möts i den intertropiska konvergenszonen","Luften kyls av och bildar kraftiga regnmoln","Det regnar nästan varje dag","Tät regnskog växer"]},
+{id:"lagtryck",name:"Så uppstår ett lågtryck med regn",em:"🌧️",hint:"Börja med varm luft.",items:["Luften värms upp och blir fuktig","Den varma luften stiger från jordytan","Luften kyls ner på hög höjd","Vattenångan bildar moln","Det blir blåsigt och regnigt"]},
+{id:"hogtryck",name:"Så uppstår ett högtryck",em:"☀️",hint:"Börja med kall, torr luft.",items:["Nedkyld, torr luft sjunker mot jordytan","Luften värms upp när den sjunker","Molnen löses upp","Det blir klart, soligt och vindstilla"]},
+{id:"varmfront",name:"När en varmfront kommer",em:"🌥️",hint:"Börja med den varma luften.",items:["Varm luft rör sig framåt mot den kalla luften","Den lätta varma luften glider upp ovanpå den kalla","Höga slöjmoln syns först","Ett långvarigt, stilla regn faller"]},
+{id:"orkan",name:"Så bildas en orkan",em:"🌀",hint:"Börja med havet.",items:["Havsvattnet värms upp till minst 26–27 grader","Enorma mängder fuktig luft stiger uppåt","Luften börjar rotera","En orkan med extrema vindar och skyfall är född"]},
+{id:"golf",name:"Varför Sverige har milda vintrar",em:"🌊",hint:"Börja långt bort, i Mexikanska golfen.",items:["Varmt ytvatten finns vid ekvatorn och Mexikanska golfen","Golfströmmen för det varma vattnet upp längs Norges kust","Västvindarna för mild, fuktig havsluft in mot Sverige","Vi får betydligt mildare vintrar än Alaska"]},
+{id:"glaciar",name:"Så bildas och rör sig en glaciär",em:"🏔️",hint:"Börja med snön.",items:["Snö packas ihop under tusentals år på ett högt berg","Snön blir till en mycket tung glaciär","Glaciären glider sakta nedför dalgången","Berggrunden under slipas"]},
+{id:"grundvatten",name:"Vattnets väg till brunnen",em:"💧",hint:"Börja med nederbörden.",items:["Regn och smält snö faller","Vattnet sjunker ner genom jordlagren","Grundvattnet fylls på","Vi hämtar dricksvatten via brunnar"]},
+{id:"oken",name:"Så uppstår ökenspridning",em:"🏜️",hint:"Börja med boskapen.",items:["Boskap betar bort växter i torra gränsområden","Marken blir bar","Den bördiga matjorden blåser bort","Savann och stäpp förvandlas till öken"]},
+{id:"monsun",name:"Monsunens år i Asien",em:"🌦️",hint:"Börja på sommaren.",items:["På sommaren värms kontinenten upp snabbare än havet","Fuktig monsun dras in från Indiska oceanen","Regnet ger vatten åt risodlingarna","På vintern vänder vinden och det blir torka"]},
+{id:"regnmangd",name:"Från mest till minst regn",em:"🌳",hint:"Börja med den blötaste.",items:["Regnskog","Savann","Stäpp","Öken"]},
+{id:"zoner",name:"Klimatzonerna från ekvatorn mot polen",em:"🌡️",hint:"Börja vid ekvatorn.",items:["Tropiska zonen","Subtropiska zonen","Tempererade zonen (där Sverige ligger)","Polarzonen"]},
+{id:"aret",name:"Årets vändpunkter, med början på våren",em:"📅",hint:"Börja med våren.",items:["Vårdagjämning (omkring 20 mars)","Sommarsolstånd (omkring 21 juni)","Vintersolstånd (omkring 21 december)"]}
+];
+const PODCAST={id:"pod",t:"Hela repetitionen",min:"ca 18 min – podd med två röster",audio:"geografipodden.mp3",lines:[["A", "Välkommen till Geografipodden. Idag ska vi gå igenom grunderna i jordens krafter och geografi inför det muntliga provet i årskurs sju."], ["B", "Ja, det bästa sättet att klara ett muntligt prov är ju inte bara att rabbla ord, utan att förstå hur allt faktiskt hänger ihop."], ["A", "Precis så är det. Vi ska bygga upp förståelsen steg för steg, från kartans linjer till vindar, havsströmmar och hur naturen formas."], ["B", "Det låter som en bra plan. Var börjar vi när vi vill orientera oss och hitta en plats på jorden?"], ["A", "Man börjar med väderstrecken. Väderstreck är samlingsnamnet för norr, söder, öster och väster."], ["B", "Och med hjälp av solens position på himlen eller en enkel kompass kan man ta ut de fyra väderstrecken i naturen."], ["A", "Men om du vill beskriva en exakt punkt på jordklotet räcker det förstås inte med att bara säga att man ska gå mot norr."], ["B", "Nej, då behöver vi ett ordentligt rutnät över hela planeten, precis som i ett koordinatsystem i matten."], ["A", "Exakt. Det rutnätet består av två sorters linjer: breddgrader och längdgrader. Vi kan börja med breddgraderna."], ["B", "En breddgrad är en uppdelning av jordklotet i nittio grader nordlig och nittio grader sydlig bredd."], ["A", "Och startlinjen för breddgraderna är ekvatorn, som ligger på breddgrad noll. Man kan tänka på ekvatorn som midjan på jorden."], ["B", "Vid ekvatorn träffar solens strålar jorden rakt framifrån året runt, så där är det alltid varmt och dag och natt är ungefär tolv timmar vardera."], ["A", "Om man mäter en plats breddgrad, alltså hur långt norr eller söder om ekvatorn den ligger, kan man avgöra hur varmt klimatet brukar vara."], ["B", "Eftersom jorden är rund träffar solstrålarna marken mer snett ju högre gradtalet är, och därför blir det kallare ju längre från ekvatorn man kommer."], ["A", "Så breddgrad hänger direkt ihop med klimat. Den andra sortens linjer är längdgraderna."], ["B", "Längdgrad är en uppdelning av jordklotet i etthundraåttio grader östlig och etthundraåttio grader västlig längd."], ["A", "De löper som apelsinklyftor från nordpolen till sydpolen. Ett annat namn för längdgrad är meridian."], ["B", "Och den viktigaste meridianen är nollmeridianen, som går rakt genom Greenwich i London och har värdet längdgrad noll."], ["A", "Från den mäter man avståndet österut och västerut, och det är utifrån längdgraderna som världens tidszoner bestäms."], ["B", "Så breddgrad styr klimat och temperatur, medan längdgrad styr vilken tid på dygnet och vilken tidszon vi har."], ["A", "Precis så. Och när en breddgrad och en längdgrad möts får man en koordinat, ett tal som anger en exakt punkt på kartan."], ["B", "Det är så en GPS fungerar när den kombinerar nordlig eller sydlig bredd med östlig eller västlig längd för att hitta rätt med några meters marginal."], ["A", "Sedan har vi den topografiska kartan, som visar höjdskillnader i landskapet med hjälp av höjdkurvor."], ["B", "När höjdkurvorna ligger tätt intill varandra på kartan vet man att det är väldigt brant, som i ett bergsområde."], ["A", "Då har vi kartan klar för oss. Nu ska vi titta närmare på solen och varför vi egentligen har årstider."], ["B", "Och här finns det en viktig grundorsak som allt bygger på: jordaxeln lutar tjugotre och en halv grader."], ["A", "Många tror ju felaktigt att det är sommar för att jorden är närmare solen, men det handlar helt och hållet om jordaxelns lutning."], ["B", "När jorden snurrar runt solen lutar vår halva in mot solen under sommaren, och bort från solen under vintern."], ["A", "Det gör att mängden solljus och solvärme växlar, vilket ger oss våra fyra tydliga årstider i Sverige: vår, sommar, höst och vinter."], ["B", "Ett centralt begrepp här är zenit. Vad innebär det egentligen när solen står i zenit?"], ["A", "Zenit betyder att solen står nittio grader rakt upp på himlen ovanför betraktaren. Då träffar strålarna marken rakt uppifrån och kastar ingen skugga åt sidorna."], ["B", "Och eftersom strålarna inte sprids ut ger det maximal värme. Men solen kan bara stå i zenit i ett visst område på jorden."], ["A", "Just det, bara i tropikerna, vilket är bältet runt ekvatorn mellan de två vändkretsarna."], ["B", "Vändkretsarna ligger på tjugotre och en halv grader norr och söder om ekvatorn: Kräftans vändkrets i norr och Stenbockens vändkrets i söder."], ["A", "Eftersom jordaxeln lutar just tjugotre och en halv grader markerar vändkretsarna den yttersta gränsen för var solen någonsin kan stå i zenit."], ["B", "I tropikerna står solen högt året om, och därför blir det aldrig någon riktigt kall vinter där."], ["A", "Tittar vi istället längst upp i norr eller längst ner i söder hittar vi polcirkeln, området mellan en viss breddgrad och polen."], ["B", "Innanför polcirkeln skiner solen tjugofyra timmar i sträck under minst en sommardag, vilket kallas midnattssol."], ["A", "Och på vintern går solen inte upp alls under minst ett helt dygn, vilket kallas polarnatt."], ["B", "Allt detta styrs alltså av jordaxelns lutning. Och det finns tre viktiga datum eller vändpunkter på året som man ska kunna till provet."], ["A", "Den första är vårdagjämningen omkring tjugonde mars. Då ligger jordaxeln i nittio graders vinkel mot solen, så dag och natt är tolv timmar långa överallt på jorden."], ["B", "Sedan kommer sommarsolståndet omkring tjugoförsta juni, när norra halvklotet lutar som allra mest mot solen. Det är årets längsta dag och ljusaste natt."], ["A", "Och motsatsen är vintersolståndet omkring tjugoförsta december. Då lutar norra halvklotet som mest bort från solen, och vi får årets kortaste dag."], ["B", "Vid vintersolståndet har området innanför polcirkeln polarnatt, och vid sommarsolståndet har de midnattssol."], ["A", "Nu rör vi oss uppåt i luften och går in på atmosfär och väder."], ["B", "Atmosfären är området mellan jordytan och rymden, som fungerar som en skyddsfilt av gaser och ger oss syre att andas och skydd mot strålning."], ["A", "Och den nedersta delen av atmosfären, närmast marken, heter troposfären. Det är där nästan all luftmassa och vattenånga finns samlad."], ["B", "Därför utspelar sig allt väder som moln, regnskurar, vindar och åska just i troposfären."], ["A", "En klassisk fråga på provet är skillnaden mellan väder och klimat. Väder är nederbörd, temperatur och solsken just nu, som skiftar från timme till timme."], ["B", "Medan klimat är vädret mätt som ett genomsnitt under minst trettio år. Även om Medelhavet råkar ha en kall julivecka är klimatet där ändå varmt och torrt."], ["A", "Nederbörd är samlingsnamnet för allt vatten som faller från molnen: regn, snö och hagel, när dropparna eller iskristallerna blir för tunga för luften att hålla uppe."], ["B", "Och vad som händer med vädret beror mycket på lufttrycket, där vi skiljer på högtryck och lågtryck."], ["A", "Högtryck är när nedkyld, torr luft sjunker mot jordytan. När luften sjunker värms den upp, molnen löses upp, och det blir klart, soligt och vindstilla."], ["B", "Lågtryck är motsatsen: uppvärmd, fuktig luft stiger från marken. På hög höjd kyls den av, vattenångan bildar moln, och det blir ofta blåsigt och regnigt."], ["A", "Med lågtrycken kommer ofta en varmfront, vilket är en varm luftmassa som sakta glider upp ovanpå den kalla luften framför sig."], ["B", "Det syns först som höga slöjmoln på himlen och leder sedan till ett långvarigt, stilla regn."], ["A", "Sedan finns det mer extrema väderfenomen. En orkan är ett stort stormoväder som uppstår över varmt hav, där vattnet måste vara minst tjugosex till tjugosju grader varmt."], ["B", "Då stiger fuktig luft uppåt och börjar rotera med extrema vindar och skyfall som följd. Och i Stilla havet och Indiska oceanen kallas samma typ av oväder för tyfon."], ["A", "En tromb däremot är en kraftig virvelvind över land, till exempel under ett kraftigt sommaråskväder i Sverige, det som på engelska kallas tornado."], ["B", "Skillnaden är tydlig: orkaner och tyfoner växer fram över varma hav, medan en tromb virvlar upp över land."], ["A", "Nu ska vi titta på de stora vindarna och havsströmmarna som flyttar värme och fukt över hela jordklotet."], ["B", "Det börjar vid ekvatorn där solen värmer marken som mest. Den varma luften stiger ständigt uppåt, och ny luft strömmar in för att ersätta den."], ["A", "Det skapar passadvindarna, som alltid blåser från samma håll kring ekvatorn. Norr om ekvatorn blåser de från nordost, och söder om den från sydost."], ["B", "Där nordostpassaden och sydostpassaden möts kallas området för den intertropiska konvergenszonen."], ["A", "I den zonen pressas varm, fuktig luft uppåt, kyls av och bildar väldiga regnmoln nästan varje dag runt ekvatorn."], ["B", "Det är en pålitlig vind som segelfartyg använde förr i tiden. Men om vi flyttar blicken till Asien finns det en vind som fungerar helt annorlunda: monsunen."], ["A", "Monsun är en vind som blåser åt ett håll på sommaren och det motsatta på vintern. På sommaren värms kontinenten upp snabbare än havet, vilket drar in fuktig luft och livsviktigt regn från Indiska oceanen till risodlingarna."], ["B", "Och på vintern vänder vinden och blåser ut från kontinenten, vilket skapar en torr period. Så passadvinden blåser alltid åt samma håll, medan monsunen byter riktning mellan sommar och vinter."], ["A", "I Sverige påverkas vi däremot av västvindsbältet, som ligger runt fyrtionde till sextionde breddgraden."], ["B", "Eftersom Sverige ligger mitt i det bältet blåser de flesta lågtryck och vindar in från Atlanten i väster, med mild och fuktig havsluft."], ["A", "Och den luften värms upp av en havsström. En havsström är transport av vatten i världshaven, driven av vindar, jordens rotation samt vattnets temperatur och salthalt."], ["B", "Den fungerar som en gigantisk flod i havet som flyttar värme från ekvatorn mot polerna. Och för vår del är Golfströmmen helt avgörande."], ["A", "Golfströmmen för med sig varmt ytvatten hela vägen från Mexikanska golfen upp längs Norges kust."], ["B", "Sverige ligger faktiskt på samma breddgrad som det iskalla Alaska, men tack vare Golfströmmen och västvindarna får vi betydligt mildare vintrar här."], ["A", "Nu kan vi knyta ihop alla dessa delar och se hur klimatzoner och olika naturtyper skapas på jorden."], ["B", "Hur delas jorden in i klimatzoner?"], ["A", "En klimatzon är ett område där alla platser har ungefär samma klimat. Världen delas in i fyra zoner beroende på mängden solenergi: den tropiska, den subtropiska, den tempererade och polarzonen."], ["B", "Sverige tillhör den tempererade klimatzonen. Men inom en och samma zon kan klimatet ändå skilja sig beroende på hur nära havet man befinner sig."], ["A", "Kustklimat har kalla, fuktiga somrar och milda vintrar, som i Göteborg eller Bergen. Havet tar lång tid att värma upp och kyla ner, så det dämpar både sommarhetta och vinterkyla."], ["B", "Inlandsklimat är raka motsatsen, med heta, torra somrar och iskalla vintrar. Det har man långt inne på kontinenter, som i centrala Ryssland, där det saknas hav som kan jämna ut temperaturen."], ["A", "Ser vi sedan till naturen och vegetationen styrs den helt av hur mycket nederbörd som faller. Vid ekvatorn har vi regnskog, där det regnar nästan varje dag under minst nio månader om året."], ["B", "Den växer i flera våningar och rymmer mer än hälften av alla världens växt- och djurarter."], ["A", "När vi rör oss bort från ekvatorn minskar regnmängden och vi kommer till savannen. Den består av högt gräs, buskar och enstaka träd och breder ut sig mellan regnskogen och stäppen."], ["B", "Där är regnmängden för liten för tät skog, men räcker till bete för stora djurhjordar som zebror, gnuer och elefanter."], ["A", "På savannen finns bara två årstider: regnperiod och torrperiod. Regnperioden inträffar när den intertropiska konvergenszonen förflyttar sig över området, vilket fyller floderna och gör landskapet grönt."], ["B", "Under torrperioden regnar det inte på flera månader, gräset torkar bort och djuren måste vandra långa sträckor för att hitta vatten."], ["A", "Fortsätter vi ännu längre bort från regnet kommer stäppen, ett torrt område med tåligt gräs och enstaka låga buskar, beläget mellan savannen och den torra öknen."], ["B", "Ett stort miljöproblem i sådana torra gränsområden, som i Sahel söder om Sahara, är ökenspridning."], ["A", "När boskap betar bort för mycket av växterna lossnar den bördiga matjorden och blåser bort med vinden, så att savann och stäpp förvandlas till obrukbar öken."], ["B", "Två viktiga begrepp till som hänger ihop med nederbörd är glaciärer och grundvatten."], ["A", "En glaciär är is på land som är i rörelse, till skillnad från inlandsis som ligger stilla. Den bildas när snö packas på höga berg under tusentals år, blir tung och glider sakta nedåt medan den slipar berget."], ["B", "Och grundvatten är det vatten som sipprar ner genom jordlagren från regn och smältande snö. Det lagras i marken som en underjordisk reservoar och blir till dricksvatten i våra brunnar."], ["A", "Låt oss ta ett konkret exempel för att visa hur alla dessa bitar klickar i varandra under ett prov."], ["B", "Ja, om läraren frågar: varför ser naturen så annorlunda ut i centrala Afrika jämfört med i Sverige?"], ["A", "Då börjar man med jordaxeln och breddgraden. Vid ekvatorn i Afrika träffar solstrålarna rakt på jorden, så solen står i zenit och värmer kraftigt."], ["B", "Varm luft stiger, passadvindarna möts i den intertropiska konvergenszonen, luften kyls av och bildar regnmoln nästan varje dag. Därför frodas en flervånings regnskog."], ["A", "Rör man sig en bit därifrån blir regnperioden mer uppdelad, vilket ger savann med gräsätare, sedan stäpp, och till slut öken där fukten inte räcker till."], ["B", "I Sverige däremot ligger vi i den tempererade zonen på en mycket högre breddgrad, där solstrålarna träffar snett. Jordaxelns lutning ger oss fyra tydliga årstider."], ["A", "Men tack vare att vi ligger i västvindsbältet blåser atlantvindar in över oss, och Golfströmmen värmer upp havet utanför så att vi får ett mycket mildare klimat än vad breddgraden antyder."], ["B", "Det är faktiskt ganska häftigt hur en enda kedja binder ihop solen, vindarna, haven och skogen."], ["A", "Nu är vi redo att sammanfatta det allra viktigaste som du kan repetera högt för dig själv inför provet."], ["B", "För det första: kartans rutnät. Breddgraderna mäter avstånd från ekvatorn och styr klimatet. Längdgraderna mäter avstånd från nollmeridianen i Greenwich och styr tidszonerna. Där de möts får vi en koordinat."], ["A", "För det andra: jordaxelns lutning på tjugotre och en halv grader ger oss årstiderna. Tropikerna ligger mellan vändkretsarna där solen kan stå i zenit, medan polcirkeln ger midnattssol och polarnatt."], ["B", "För det tredje: väder är det som sker just nu i troposfären, medan klimat är genomsnittet under minst trettio år. Högtryck ger sjunkande luft och sol, lågtryck ger stigande luft och nederbörd."], ["A", "För det fjärde: passadvindar blåser jämnt mot ekvatorn där konvergenszonen skapar dagligt regn, monsunen byter riktning mellan sommar och vinter, och Golfströmmen tillsammans med västvindarna gör Sverige varmare."], ["B", "Och för det femte: de fyra klimatzonerna delar in jorden, havet ger milt kustklimat medan inlandsklimat ger hårda vintrar, och från mest till minst regn har vi regnskog, savann, stäpp och öken."], ["A", "Om du kan förklara de här sambanden muntligt med egna ord har du en fantastisk grund för provet. Vill du fördjupa dig mer i andra delar kan du alltid generera ett nytt avsnitt om ett närliggande ämne."], ["B", "Stort lycka till med repetitionen och lycka till på provet!"]]};
+/* ===DATA-END=== */
+
+const LEVELS=[[0,"Kartläsare"],[100,"Väderkoll"],[250,"Klimatforskare"],[450,"Expeditionsledare"],[700,"Geografiproffs"],[1000,"Geografimästare"]];
+const BADGES=[
+{id:"first",em:"🌍",n:"Avfärd",d:"Spela en omgång"},
+{id:"quiz10",em:"💯",n:"Fullpoängare",d:"Alla rätt i ett quiz"},
+{id:"combo",em:"🔥",n:"Ostoppbar",d:"5 rätt i rad"},
+{id:"links10",em:"🔗",n:"Sambandsknäckaren",d:"Alla rätt i Sammanhang"},
+{id:"memory",em:"🧠",n:"Minnesproffs",d:"Memory på högst 8 drag"},
+{id:"sorter",em:"🗂️",n:"Sorteringsmästare",d:"Sortera utan fel"},
+{id:"ordna",em:"⛓️",n:"Kedjebyggaren",d:"Ordna en serie utan fel"},
+{id:"oral",em:"🗣️",n:"Muntlig mästare",d:"Klara en omgång Förklara högt"},
+{id:"lyssna",em:"🎧",n:"Lyssnaren",d:"Lyssna klart på hela podden"},
+{id:"lvl3",em:"🌡️",n:"Klimatforskare",d:"Nå nivå 3"},
+{id:"ready",em:"🏆",n:"Provklar",d:`Bemästra ${READY} begrepp`}
+];
+
+/* ============ HJÄLPARE & TILLSTÅND ============ */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+function h(tag,props,...kids){
+  const e=document.createElement(tag);
+  for(const [k,v] of Object.entries(props||{})){
+    if(k==="class")e.className=v;
+    else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);
+    else if(v===true)e.setAttribute(k,"");
+    else if(v!==false&&v!=null)e.setAttribute(k,v);
+  }
+  for(const c of kids.flat()){if(c==null||c===false)continue;e.append(c.nodeType?c:document.createTextNode(c))}
+  return e;
+}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function wsample(items,k,wf){
+  const arr=items.slice(),out=[];
+  while(out.length<k&&arr.length){
+    const ws=arr.map(wf);let r=Math.random()*ws.reduce((a,b)=>a+b,0),i=0;
+    for(;i<arr.length-1;i++){r-=ws[i];if(r<=0)break}
+    out.push(arr.splice(i,1)[0]);
+  }
+  return out;
+}
+const KEY="geografispelet-jordens-krafter-v1";
+const S={xp:0,mastery:{},badges:[],heard:{},sound:true};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY))||{})}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const mOf=id=>S.mastery[id]||{ok:0,bad:0};
+const mastered=id=>{const m=mOf(id);return m.ok>=2&&m.ok>m.bad};
+const weight=id=>{const m=mOf(id);return Math.min(6,Math.max(.25,1+m.bad*1.5-m.ok*.4))};
+function record(id,ok){const m=S.mastery[id]||(S.mastery[id]={ok:0,bad:0});ok?m.ok++:m.bad++;save()}
+const masteredCount=()=>TERMS.filter(t=>mastered(t.id)).length;
+
+function levelInfo(xp){
+  let i=0;for(let k=0;k<LEVELS.length;k++)if(xp>=LEVELS[k][0])i=k;
+  const cur=LEVELS[i][0],nxt=LEVELS[i+1]?LEVELS[i+1][0]:null;
+  return{i,name:LEVELS[i][1],pct:nxt?Math.round((xp-cur)/(nxt-cur)*100):100,nxt};
+}
+function hud(){
+  const L=levelInfo(S.xp);
+  $("#lvlname").textContent=`Nivå ${L.i+1}: ${L.name} · ${S.xp} XP`+(L.nxt?` (nästa vid ${L.nxt})`:"");
+  $("#xpfill").style.width=L.pct+"%";
+  $("#xpbar").setAttribute("aria-valuenow",L.pct);
+  $("#snd").textContent=S.sound?"🔊":"🔇";
+  $("#snd").setAttribute("aria-pressed",String(S.sound));
+}
+function addXp(n){
+  if(n<=0)return;
+  const before=levelInfo(S.xp).i;
+  S.xp+=n;save();hud();
+  const L=levelInfo(S.xp);
+  if(L.i>before){toast(`🎉 Ny nivå: ${L.name}!`);sfx.win();confetti();if(L.i>=2)unlock("lvl3")}
+}
+let toastT;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2800)}
+function unlock(id){
+  if(S.badges.includes(id))return;
+  S.badges.push(id);save();
+  const b=BADGES.find(x=>x.id===id);
+  setTimeout(()=>{toast(`${b.em} Ny bricka: ${b.n}!`);sfx.win()},400);
+}
+function played(){unlock("first");if(masteredCount()>=READY)unlock("ready")}
+
+/* ljud & konfetti */
+let ac;
+function tone(f,d,type="sine",t0=0,vol=.15){
+  if(!S.sound)return;
+  try{
+    ac=ac||new(window.AudioContext||window.webkitAudioContext)();
+    const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+t0;
+    o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);
+  }catch(e){}
+}
+const sfx={ok(){tone(660,.12);tone(880,.18,"sine",.1)},bad(){tone(180,.3,"sawtooth",0,.07)},win(){[523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",i*.12))},flip(){tone(440,.05,"square",0,.04)}};
+const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function confetti(){
+  if(reduce)return;
+  const c=$("#fx"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+  const cols=["#0f6b78","#ffc933","#ffffff","#2e9b4f","#3b82c4"];
+  const ps=Array.from({length:130},()=>({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,s:5+Math.random()*7,c:cols[Math.floor(Math.random()*cols.length)],r:Math.random()*6}));
+  let f=0;
+  (function tick(){
+    x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore()});
+    if(++f<130)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height);
+  })();
+}
+
+/* uppläsning (enhetens svenska röst) */
+const synth=window.speechSynthesis;
+const svVoices=()=>synth?synth.getVoices().filter(v=>/^sv/i.test(v.lang)):[];
+const canSpeak=()=>!!synth&&"SpeechSynthesisUtterance" in window&&svVoices().length>0;
+function speakNow(text,rate=.95){
+  if(!canSpeak())return;
+  synth.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="sv-SE";u.voice=svVoices()[0]||null;u.rate=rate;
+  synth.speak(u);
+}
+
+/* ============ NAVIGERING ============ */
+let keyHandler=null,cleanup=null;
+document.addEventListener("keydown",e=>{if(keyHandler&&!(e.target.matches&&e.target.matches("textarea,input")))keyHandler(e)});
+function go(view,arg){
+  keyHandler=null;if(cleanup){cleanup();cleanup=null}
+  app.replaceChildren();
+  $("#back").hidden=view==="home";
+  VIEWS[view](arg);
+  window.scrollTo(0,0);
+}
+$("#back").onclick=()=>go("home");
+$("#snd").onclick=()=>{S.sound=!S.sound;save();hud();if(S.sound)sfx.ok()};
+
+function sectionPicker(onStart,label="Starta"){
+  let sel=0;
+  const chips=h("div",{class:"chips",role:"group","aria-label":"Välj avsnitt"});
+  const draw=()=>{
+    chips.replaceChildren(...[[0,"Alla avsnitt"],...Object.entries(SECTIONS).map(([k,v])=>[+k,`${k}. ${v}`])].map(([k,v])=>
+      h("button",{class:"chip","aria-pressed":String(sel===k),onclick:()=>{sel=k;draw()}},v)));
+  };
+  draw();
+  return h("div",{},chips,h("button",{class:"btn alt",onclick:()=>onStart(sel)},label+" ▶"));
+}
+const termsFor=sec=>sec?TERMS.filter(t=>t.sec===sec):TERMS;
+function results({title,stars,lines,again,extra}){
+  app.replaceChildren(h("div",{class:"card center"},
+    h("h2",{},title),
+    stars!=null?h("div",{class:"stars","aria-label":`${stars} av 3 stjärnor`},"★".repeat(stars)+"☆".repeat(3-stars)):null,
+    ...lines.map(l=>h("p",{},l)),
+    extra||null,
+    h("div",{class:"row",style:"justify-content:center;margin-top:12px"},
+      h("button",{class:"btn alt",onclick:again},"Spela igen"),
+      h("button",{class:"btn ghost",onclick:()=>go("home")},"Till menyn"))));
+  window.scrollTo(0,0);
+}
+
+/* ============ HEM ============ */
+const VIEWS={};
+VIEWS.home=()=>{
+  const mc=masteredCount();
+  const tiles=[
+    ["🗣️","Förklara högt","Provet är muntligt! Säg högt vad begreppet betyder, kolla facit och bedöm dig själv.","oral"],
+    ["⚡","Quiz","10 snabba frågor om begrepp, exempel och fakta. Fel svar kostar ett liv – du har tre.","quiz"],
+    ["🔗","Sammanhang","Hur hänger begreppen ihop? Fyll i det begrepp som saknas i meningen.","links"],
+    ["🃏","Memory","Para ihop begrepp med förklaring – eller begrepp som hänger ihop.","memory"],
+    ["🗂️","Sortera","Högtryck eller lågtryck? Kustklimat eller inlandsklimat? Tryck på rätt låda.","sort"],
+    ["⛓️","Ordna","Lägg orsak och verkan i rätt ordning – från solen till regnskogen.","order"],
+    ["🎧","Lyssna","Låt enheten läsa upp begreppen – bra inför läggdags eller på bussen.","listen"],
+    ["📖","Plugga begrepp",`Alla ${TERMS.length} begrepp med exempel och kopplingar, att bläddra och söka i.`,"study"]
+  ];
+  app.append(
+    h("div",{class:"hero"},h("h2",{},"Redo för provet? 🌍"),h("p",{},"Geografi: Jordens krafter – kartor, solen, väder, vindar och klimat. På provet ska du förklara begrepp muntligt och visa hur de hänger ihop, så öva på båda. Spelet lär sig vilka begrepp du är osäker på och frågar mer om dem.")),
+    h("div",{class:"grid menu"},tiles.map(([em,n,d,v])=>h("button",{class:"tile",onclick:()=>go(v)},h("span",{class:"em","aria-hidden":"true"},em),h("b",{},n),h("span",{class:"d"},d)))),
+    h("h3",{style:"margin-top:26px"},`Du kan ${mc} av ${TERMS.length} begrepp`),
+    h("p",{class:"hint"},"Ett begrepp räknas som bemästrat när du svarat rätt på det minst två gånger (och oftare rätt än fel)."),
+    h("div",{class:"card"},Object.entries(SECTIONS).map(([k,v])=>{
+      const ts=TERMS.filter(t=>t.sec===+k),m=ts.filter(t=>mastered(t.id)).length;
+      return h("div",{},h("div",{class:"row"},h("b",{},`${k}. ${v}`),h("span",{class:"hint",style:"margin-left:auto"},`${m}/${ts.length}`)),h("div",{class:"prog"},h("i",{style:`width:${m/ts.length*100}%`})));
+    })),
+    h("h3",{style:"margin-top:26px"},"Brickor"),
+    h("div",{class:"badges"},BADGES.map(b=>{const on=S.badges.includes(b.id);return h("div",{class:"badge"+(on?" on":"")},h("span",{class:"em","aria-hidden":"true"},b.em),h("b",{},b.n),h("div",{},on?"Upplåst!":b.d))})),
+    h("h3",{style:"margin-top:26px"},"Fler sätt att plugga"),
+    h("div",{class:"card ext"},
+      h("p",{},"Repetera filmerna från lektionen:"),
+      h("ul",{},
+        h("li",{},h("a",{href:"https://urplay.se/program/240799-plugga-geografi-kartor",target:"_blank",rel:"noopener"},"Plugga geografi: Kartor")),
+        h("li",{},h("a",{href:"https://urplay.se/program/238338-plugga-geografi-vader-och-klimat",target:"_blank",rel:"noopener"},"Plugga geografi: Väder och klimat"))),
+      h("p",{},"Du kan också öva begreppen i Quizlet.")),
+    h("p",{style:"margin-top:24px"},h("button",{class:"btn ghost",onclick:()=>{if(confirm("Nollställa all framgång?")){Object.assign(S,{xp:0,mastery:{},badges:[],heard:{}});save();hud();go("home")}}},"Nollställ framsteg"))
+  );
+};
+
+/* ============ QUIZ (och Sammanhang) ============ */
+function distract(t,badFn,k=3){
+  const bad=x=>x.id===t.id||isSyn(t,x)||badFn(x);
+  let d=shuffle(TERMS.filter(x=>x.sec===t.sec&&!bad(x))).slice(0,k);
+  if(d.length<k)d=d.concat(shuffle(TERMS.filter(x=>!bad(x)&&!d.includes(x))).slice(0,k-d.length));
+  return d;
+}
+function termQ(t){
+  const r=Math.random();
+  if(r<.34){
+    const p=mask(t.d,t);
+    return{id:t.id,tag:"Vilket begrepp beskrivs?",prompt:p,opts:shuffle([{text:t.t,ok:true},...distract(t,x=>mentions(p,x)).map(x=>({text:x.t}))]),explain:`${t.t}: ${t.d}`};
+  }
+  if(r<.67){
+    const p=mask(t.e,t);
+    return{id:t.id,tag:"Vilket begrepp passar exemplet?",prompt:p,opts:shuffle([{text:t.t,ok:true},...distract(t,x=>mentions(p,x)).map(x=>({text:x.t}))]),explain:`${t.t}: ${t.d}`};
+  }
+  return{id:t.id,tag:"Vad betyder begreppet?",prompt:t.t,big:true,opts:shuffle([{text:short(t),ok:true},...distract(t,x=>mentions(short(x),t)).map(x=>({text:short(x)}))]),explain:`${t.t}: ${t.d}`};
+}
+const factQ=f=>({id:f.id,tag:"Fakta",prompt:f.q,opts:shuffle([{text:f.a,ok:true},...f.w.map(text=>({text}))]),explain:f.e});
+function linkQ(l){
+  const ends=shuffle([BYID[l.a],BYID[l.b]]);
+  const t=ends.find(x=>mask(l.why,x)!==l.why)||ends[0];
+  const o=t===BYID[l.a]?BYID[l.b]:BYID[l.a];
+  const p=mask(l.why,t);
+  return{id:t.id,tag:"Vilket begrepp saknas?",prompt:p,opts:shuffle([{text:t.t,ok:true},...distract(t,x=>mentions(l.why,x)).map(x=>({text:x.t}))]),explain:`${t.t} och ${o.t} hänger ihop: ${l.why}`};
+}
+VIEWS.quiz=()=>{
+  app.append(h("h2",{},"⚡ Quiz"),h("p",{class:"sub"},"Välj avsnitt. Tips: tangenterna 1–4 svarar, Enter går vidare."),sectionPicker(playQuiz));
+};
+VIEWS.links=()=>{
+  app.append(h("h2",{},"🔗 Sammanhang"),h("p",{class:"sub"},"Läraren vill att du ska veta hur begreppen hänger ihop. Här fyller du i det begrepp som saknas i en mening om ett samband. Tangenterna 1–4 svarar, Enter går vidare."),sectionPicker(playLinks));
+};
+function playQuiz(sec){
+  const cands=[...termsFor(sec).map(t=>({t})),...FACTS.filter(f=>!sec||f.sec===sec).map(f=>({f}))];
+  const qs=wsample(cands,Math.min(10,cands.length),c=>c.t?weight(c.t.id):1.2).map(c=>c.t?termQ(c.t):factQ(c.f));
+  runQuiz(qs,{again:()=>playQuiz(sec),perfectBadge:"quiz10"});
+}
+function playLinks(sec){
+  const pool=LINKS.filter(l=>!sec||BYID[l.a].sec===sec||BYID[l.b].sec===sec);
+  const qs=wsample(pool,Math.min(10,pool.length),l=>(weight(l.a)+weight(l.b))/2).map(linkQ);
+  runQuiz(qs,{again:()=>playLinks(sec),perfectBadge:"links10"});
+}
+function runQuiz(qs,{again,perfectBadge}){
+  let i=0,hearts=3,score=0,streak=0,bestStreak=0,xpGain=0,answered=false;const missed=[];
+  function show(){
+    answered=false;const q=qs[i];
+    const optEls=q.opts.map((o,k)=>h("button",{class:"opt",onclick:()=>pick(k)},h("span",{class:"k"},String(k+1)),h("span",{},o.text)));
+    const fb=h("div",{"aria-live":"polite"});
+    const next=h("button",{class:"btn",hidden:true,onclick:advance},i+1<qs.length?"Nästa ▶":"Se resultat ▶");
+    app.replaceChildren(
+      h("div",{class:"stat"},h("span",{},`Fråga ${i+1}/${qs.length}`),h("span",{"aria-label":`${hearts} liv kvar`},"♥".repeat(hearts)+"♡".repeat(3-hearts)),h("span",{class:"grow"}),h("span",{},streak>1?`🔥 ${streak} i rad`:"")),
+      h("div",{class:"prog"},h("i",{style:`width:${i/qs.length*100}%`})),
+      h("div",{class:"card"},h("span",{class:"tag"},q.tag),h("div",{class:"q"+(q.big?" big":"")},q.prompt),h("div",{class:"opts"},optEls),fb,h("div",{style:"margin-top:12px"},next)));
+    function pick(k){
+      if(answered)return;answered=true;
+      const ok=!!q.opts[k].ok;
+      optEls.forEach((el,n)=>{el.disabled=true;if(q.opts[n].ok){el.classList.add("right");el.prepend("✓ ")}else if(n===k){el.classList.add("wrong");el.prepend("✗ ")}});
+      record(q.id,ok);
+      if(ok){
+        score++;streak++;bestStreak=Math.max(bestStreak,streak);
+        const g=10+(streak>=3?5:0);xpGain+=g;addXp(g);sfx.ok();if(streak>=5)unlock("combo");
+        fb.replaceChildren(h("div",{class:"fb ok"},`Rätt! +${g} XP`+(streak>=3?" (combo-bonus!)":""),h("p",{},q.explain)));
+      }else{
+        hearts--;streak=0;sfx.bad();missed.push(q);
+        fb.replaceChildren(h("div",{class:"fb bad"},"Inte riktigt.",h("p",{},q.explain)));
+      }
+      next.hidden=false;next.focus();
+      if(hearts<=0)next.textContent="Se resultat ▶";
+    }
+    keyHandler=e=>{
+      if(e.key>="1"&&e.key<="4"&&q.opts[+e.key-1])pick(+e.key-1);
+      else if((e.key==="Enter")&&answered)advance();
+    };
+  }
+  function advance(){
+    if(!answered)return;
+    i++;
+    if(hearts<=0||i>=qs.length)return finish();
+    show();
+  }
+  function finish(){
+    keyHandler=null;played();
+    const stars=score>=qs.length&&hearts>0?3:score>=Math.ceil(qs.length*.7)?2:score>=Math.ceil(qs.length*.4)?1:0;
+    if(score===qs.length)unlock(perfectBadge);
+    if(stars>=2){sfx.win();confetti()}
+    const bonus=stars*5;addXp(bonus);
+    results({
+      title:hearts<=0?"Slut på liv – men du lärde dig något!":score===qs.length?"Perfekt! 🎉":"Bra kämpat!",
+      stars,
+      lines:[`${score} av ${qs.length} rätt · bästa serie ${bestStreak} · +${xpGain+bonus} XP`],
+      extra:missed.length?h("div",{style:"text-align:left;margin-top:10px"},h("h3",{},"Repetera dessa:"),h("ul",{},missed.map(q=>h("li",{},q.explain)))):null,
+      again
+    });
+  }
+  show();
+}
+
+/* ============ MEMORY ============ */
+VIEWS.memory=()=>{
+  let variant="def";
+  const chips=h("div",{class:"chips",role:"group","aria-label":"Välj typ av memory"});
+  const draw=()=>chips.replaceChildren(...[["def","Begrepp + förklaring"],["links","Begrepp som hänger ihop"]].map(([k,v])=>
+    h("button",{class:"chip","aria-pressed":String(variant===k),onclick:()=>{variant=k;draw()}},v)));
+  draw();
+  app.append(h("h2",{},"🃏 Memory"),
+    h("p",{class:"sub"},"Vänd två kort och hitta par. Färre drag = fler stjärnor."),
+    h("h3",{},"Vad ska paras ihop?"),chips,
+    sectionPicker(sec=>playMemory(sec,variant)));
+};
+function pickPairs(sec,n){
+  const pool=LINKS.filter(l=>!sec||BYID[l.a].sec===sec||BYID[l.b].sec===sec);
+  let best=[];
+  for(let attempt=0;attempt<60&&best.length<n;attempt++){
+    const chosen=[],used=new Set();
+    const wf=l=>(weight(l.a)+weight(l.b))/2,rest=LINKS.filter(l=>!pool.includes(l));
+    for(const l of [...wsample(pool,pool.length,wf),...wsample(rest,rest.length,wf)]){
+      if(used.has(l.a)||used.has(l.b))continue;
+      if([...used].some(u=>adjacent(u,l.a)||adjacent(u,l.b)))continue;
+      chosen.push(l);used.add(l.a);used.add(l.b);
+      if(chosen.length===n)break;
+    }
+    if(chosen.length>best.length)best=chosen;
+  }
+  return best;
+}
+function playMemory(sec,variant="def"){
+  let cards,pairsTotal,matches;
+  if(variant==="links"){
+    const pairs=pickPairs(sec,6);
+    cards=shuffle(pairs.flatMap(l=>[{id:l.a,term:true,text:BYID[l.a].t},{id:l.b,term:true,text:BYID[l.b].t}]));
+    pairsTotal=pairs.length;
+    matches=(x,y)=>adjacent(x.id,y.id);
+  }else{
+    const pool=wsample(termsFor(sec),6,t=>weight(t.id));
+    cards=shuffle(pool.flatMap(t=>[{id:t.id,term:true,text:t.t},{id:t.id,term:false,text:short(t)}]));
+    pairsTotal=pool.length;
+    matches=(x,y)=>x.id===y.id&&x.term!==y.term;
+  }
+  let first=null,lock=false,moves=0,pairs=0,secs=0;
+  const movesEl=h("span",{},"Drag: 0"),timeEl=h("span",{},"0 s");
+  const timer=setInterval(()=>{secs++;timeEl.textContent=secs+" s"},1000);cleanup=()=>clearInterval(timer);
+  const log=h("div",{class:"log","aria-live":"polite"});
+  const els=cards.map((c,k)=>h("button",{class:"mc","aria-label":"Dolt kort, tryck för att vända",onclick:()=>flip(k)},"❓"));
+  const show=(k,on)=>{
+    const c=cards[k],b=els[k];
+    b.className="mc"+(on?" open"+(c.term?" term":""):"")+(on?" pop":"");
+    b.textContent=on?c.text:"❓";
+    b.setAttribute("aria-label",on?c.text:"Dolt kort, tryck för att vända");
+  };
+  function flip(k){
+    if(lock||els[k].dataset.done||first===k)return;
+    sfx.flip();show(k,true);
+    if(first===null){first=k;return}
+    moves++;movesEl.textContent="Drag: "+moves;
+    const a=first;first=null;
+    if(matches(cards[a],cards[k])){
+      [a,k].forEach(n=>{els[n].dataset.done="1";els[n].className="mc done";els[n].disabled=true});
+      sfx.ok();addXp(5);record(cards[k].id,true);record(cards[a].id,true);pairs++;
+      if(variant==="links"){
+        const l=NB.get(cards[a].id).find(n=>n.o.id===cards[k].id).l;
+        log.prepend(h("div",{class:"model"},h("b",{},`${BYID[l.a].t} ↔ ${BYID[l.b].t}`),h("p",{},l.why)));
+      }
+      if(pairs===pairsTotal)finish();
+    }else{
+      lock=true;record(cards[a].id,false);record(cards[k].id,false);sfx.bad();
+      setTimeout(()=>{show(a,false);show(k,false);lock=false},1300);
+    }
+  }
+  function finish(){
+    clearInterval(timer);played();
+    const stars=moves<=pairsTotal*1.5?3:moves<=pairsTotal*2.4?2:1,bonus=stars*10;
+    if(moves<=8&&pairsTotal>=6)unlock("memory");
+    sfx.win();confetti();addXp(bonus);
+    setTimeout(()=>results({title:"Alla par hittade! 🎉",stars,lines:[`${moves} drag på ${secs} sekunder · +${pairs*5+bonus} XP`],
+      extra:variant==="links"&&log.children.length?h("div",{style:"text-align:left;margin-top:10px"},h("h3",{},"Sambanden du hittade:"),log):null,
+      again:()=>playMemory(sec,variant)}),1100);
+  }
+  app.replaceChildren(h("div",{class:"stat"},movesEl,timeEl,h("span",{class:"grow"}),h("span",{class:"hint"},variant==="links"?"Hitta begrepp som hänger ihop":"Para begrepp (gult) med förklaring")),h("div",{class:"grid mem"},els),log);
+}
+
+/* ============ SORTERA ============ */
+VIEWS.sort=()=>{
+  app.append(h("h2",{},"🗂️ Sortera"),h("p",{class:"sub"},"Välj en sorteringsövning. Tryck på rätt låda för varje kort."),
+    h("div",{class:"grid menu"},SORTS.map(s=>h("button",{class:"tile",onclick:()=>playSort(s)},h("span",{class:"em","aria-hidden":"true"},s.em),h("b",{},s.name),h("span",{class:"d"},s.buckets.join(" · "))))));
+};
+function playSort(set){
+  const queue=shuffle(set.items).slice(0,Math.min(8,set.items.length));
+  const total=queue.length;let done=0,firstTry=0,xp=0;const retried=new Set();
+  function show(){
+    if(!queue.length)return finish();
+    const [text,right]=queue[0];let busy=false;
+    const bs=set.buckets.map((b,k)=>h("button",{class:"bucket",onclick:()=>pick(k)},b));
+    const card=h("div",{class:"sortcard"},text);
+    app.replaceChildren(
+      h("div",{class:"stat"},h("span",{},`Kort ${Math.min(done+1,total)}/${total}`),h("span",{class:"grow"}),h("span",{},`${firstTry} rätt direkt`)),
+      h("div",{class:"prog"},h("i",{style:`width:${done/total*100}%`})),
+      h("h3",{},set.name),card,h("div",{class:"buckets",role:"group","aria-label":"Välj låda"},bs));
+    function pick(k){
+      if(busy)return;busy=true;
+      bs.forEach(b=>b.disabled=true);
+      if(k===right){
+        bs[k].classList.add("right");sfx.ok();
+        if(!retried.has(text)){firstTry++;xp+=8;addXp(8)}
+        queue.shift();done++;
+        setTimeout(show,600);
+      }else{
+        bs[k].classList.add("wrong");bs[right].classList.add("right");card.classList.add("shake");sfx.bad();
+        card.append(h("div",{style:"font-size:1rem;font-weight:600;margin-top:8px"},`Rätt: ${set.buckets[right]}`));
+        retried.add(text);const it=queue.shift();queue.push(it);
+        setTimeout(show,1700);
+      }
+    }
+  }
+  function finish(){
+    played();const perfect=firstTry===total;
+    if(perfect){unlock("sorter");sfx.win();confetti()}
+    const stars=perfect?3:firstTry>=Math.ceil(total*.7)?2:1;
+    results({title:perfect?"Felfritt! 🎉":"Klart!",stars,lines:[`${firstTry} av ${total} rätt på första försöket · +${xp} XP`],again:()=>playSort(set)});
+  }
+  show();
+}
+
+/* ============ ORDNA ============ */
+VIEWS.order=()=>{
+  app.append(h("h2",{},"⛓️ Ordna"),h("p",{class:"sub"},"Tryck på korten i rätt ordning, ett i taget. Fel kort studsar tillbaka. Här övar du på orsak och verkan – hur det ena leder till det andra."),
+    h("div",{class:"grid menu"},ORDERS.map(o=>h("button",{class:"tile",onclick:()=>playOrder(o)},h("span",{class:"em","aria-hidden":"true"},o.em),h("b",{},o.name),h("span",{class:"d"},o.items.length+" steg – "+o.hint)))));
+};
+function playOrder(o){
+  let next=0,mistakes=0;
+  const slots=h("ol",{class:"slots"});
+  const pool=h("div",{class:"pool",role:"group","aria-label":"Kort att placera"});
+  const msg=h("p",{class:"hint","aria-live":"polite"},o.hint);
+  const btns=shuffle(o.items).map(text=>{
+    const b=h("button",{class:"opt",onclick:()=>pick(text,b)},h("span",{},text));
+    return b;
+  });
+  pool.append(...btns);
+  function pick(text,b){
+    if(text===o.items[next]){
+      slots.append(h("li",{class:"slot"},text));
+      b.remove();next++;addXp(4);sfx.ok();
+      msg.textContent=next<o.items.length?"Rätt! Vilket kommer sedan?":"";
+      if(next===o.items.length)finish();
+    }else{
+      mistakes++;sfx.bad();b.classList.add("wrong","shake");
+      msg.textContent="Inte just nu – prova ett annat kort.";
+      setTimeout(()=>b.classList.remove("wrong","shake"),500);
+    }
+  }
+  function finish(){
+    played();const stars=mistakes===0?3:mistakes<=2?2:1;
+    if(mistakes===0)unlock("ordna");
+    if(stars>=2){sfx.win();confetti()}
+    addXp(stars*5);
+    setTimeout(()=>results({title:mistakes===0?"Helt rätt! 🎉":"Klart!",stars,lines:[`${mistakes} felklick · +${o.items.length*4+stars*5} XP`,"Läs ordningen en gång till – och försök berätta den högt:"],
+      extra:h("ol",{style:"text-align:left"},o.items.map(t=>h("li",{},t))),again:()=>playOrder(o)}),700);
+  }
+  app.replaceChildren(h("h3",{},o.name),h("div",{class:"card"},h("p",{class:"hint"},"Din ordning hittills:"),slots,msg),h("h3",{style:"margin-top:16px"},"Kort att placera"),pool);
+}
+
+/* ============ FÖRKLARA HÖGT ============ */
+VIEWS.oral=()=>{
+  app.append(h("h2",{},"🗣️ Förklara högt"),
+    h("p",{class:"sub"},"På provet förklarar du begrepp muntligt. Här övar du precis det: du får ett begrepp, säger svaret högt, trycker på facit och bedömer dig själv ärligt. Begrepp du inte kunde kommer tillbaka."),
+    sectionPicker(playOral));
+};
+function playOral(sec){
+  const queue=wsample(termsFor(sec),Math.min(6,termsFor(sec).length),t=>weight(t.id));
+  const total=queue.length;let done=0,could=0;const again=[],requeued=new Set();
+  function show(){
+    if(!queue.length)return finish();
+    const t=queue[0],links=NB.get(t.id)||[];
+    const facit=h("div",{hidden:true});
+    const reveal=h("button",{class:"btn alt",onclick:()=>{
+      reveal.hidden=true;facit.hidden=false;
+      facit.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+    }},"Visa facit");
+    function rate(kind){
+      if(kind==="yes"){could++;record(t.id,true);addXp(10);sfx.ok();queue.shift();done++}
+      else if(kind==="almost"){addXp(5);sfx.ok();queue.shift();done++}
+      else{record(t.id,false);addXp(2);sfx.bad();const x=queue.shift();if(!requeued.has(t.id)){requeued.add(t.id);again.push(t);queue.push(x)}else done++}
+      if(synth)synth.cancel();
+      show();
+    }
+    facit.append(...[
+      h("div",{class:"model"},h("b",{},"Betyder"),h("p",{},t.d)),
+      h("div",{class:"ex"},h("b",{},"Förklarande exempel"),h("p",{},t.e)),
+      links.length?h("div",{class:"links"},h("b",{},"Hänger ihop med"),links.map(({o,why})=>h("div",{class:"model"},h("b",{},o.t),h("p",{},why)))):null,
+      canSpeak()?h("button",{class:"btn ghost",onclick:()=>speakNow(`${t.t}. ${t.d} ${t.e}`)},"🔊 Läs upp"):null,
+      h("h3",{style:"margin-top:14px"},"Hur gick det?"),
+      h("div",{class:"rate"},
+        h("button",{class:"btn",onclick:()=>rate("yes")},"😄 Kunde det"),
+        h("button",{class:"btn alt",onclick:()=>rate("almost")},"🙂 Nästan"),
+        h("button",{class:"btn ghost",onclick:()=>rate("no")},"🤔 Inte än"))].filter(Boolean));
+    app.replaceChildren(
+      h("div",{class:"stat"},h("span",{},`Begrepp ${Math.min(done+1,total)}/${total}`),h("span",{class:"grow"}),h("span",{},`${could} kunde du direkt`)),
+      h("div",{class:"prog"},h("i",{style:`width:${done/total*100}%`})),
+      h("div",{class:"card"},h("span",{class:"tag"},SECTIONS[t.sec]),h("div",{class:"q big"},t.t),
+        h("p",{},"Säg högt, med egna ord:"),
+        h("ol",{class:"ask"},h("li",{},"Vad betyder begreppet?"),h("li",{},"Ge ett exempel."),h("li",{},"Hur hänger det ihop med andra begrepp?")),
+        h("div",{style:"margin-top:12px"},reveal)),
+      facit);
+  }
+  function finish(){
+    played();
+    const ratio=could/total,stars=ratio>=.8?3:ratio>=.5?2:1;
+    if(could>=Math.min(5,total))unlock("oral");
+    if(stars>=2){sfx.win();confetti()}
+    const bonus=stars*5;addXp(bonus);
+    results({title:stars===3?"Starkt! Du kan förklara 🎉":"Bra övat!",stars,lines:[`${could} av ${total} kunde du direkt · +${bonus} bonus-XP`],
+      extra:again.length?h("div",{style:"text-align:left;margin-top:10px"},h("h3",{},"Öva mer på:"),h("ul",{},again.map(t=>h("li",{},h("b",{},t.t),": ",t.d)))):null,
+      again:()=>playOral(sec)});
+  }
+  show();
+}
+
+/* ============ LYSSNA ============ */
+VIEWS.listen=()=>{
+  let sec=1,idx=0,playing=false,run=0,rate=1;
+  const status=h("p",{class:"hint","aria-live":"polite"});
+  const playBtn=h("button",{class:"btn alt",onclick:()=>playing?pause():play()},"▶ Spela");
+  const restart=h("button",{class:"btn ghost",onclick:()=>{pause();idx=0;mark(-1);playBtn.textContent="▶ Spela"}},"⏮ Från början");
+  const chips=h("div",{class:"chips",role:"group","aria-label":"Välj avsnitt"});
+  const speeds=[["Lugnt",.85],["Normalt",1],["Snabbt",1.2]];
+  const speedEls=h("div",{class:"chips",role:"group","aria-label":"Hastighet",style:"margin:8px 0"});
+  const drawSpeeds=()=>speedEls.replaceChildren(...speeds.map(([l,v])=>h("button",{class:"chip","aria-pressed":String(rate===v),onclick:()=>{rate=v;drawSpeeds()}},l)));
+  drawSpeeds();
+  const listEl=h("div",{class:"transcript"});
+  const next=h("div",{style:"margin-top:14px"});
+  let lineEls=[];
+  const items=()=>termsFor(sec);
+  function drawSections(){
+    chips.replaceChildren(...Object.entries(SECTIONS).map(([k,v])=>h("button",{class:"chip","aria-pressed":String(sec===+k),onclick:()=>{pause();sec=+k;idx=0;drawSections();drawList();playBtn.textContent="▶ Spela"}},`${k}. ${v}${S.heard["s"+k]?" ✓":""}`)));
+  }
+  function drawList(){
+    lineEls=items().map((t,i)=>h("button",{class:"pl",onclick:()=>{idx=i;play()}},h("b",{},t.t),h("small",{},t.d)));
+    listEl.replaceChildren(...lineEls);next.replaceChildren();
+  }
+  function mark(i){
+    lineEls.forEach((el,k)=>el.classList.toggle("now",k===i));
+    if(i>=0)lineEls[i].scrollIntoView({block:"center",behavior:reduce?"auto":"smooth"});
+  }
+  function check(){
+    if(!synth||!("SpeechSynthesisUtterance" in window)){status.textContent="Den här webbläsaren kan inte läsa upp text. Använd Plugga begrepp istället.";playBtn.disabled=true;return false}
+    if(!svVoices().length){status.textContent="Hittar ingen svensk röst på den här enheten. (Tips: i Safari på iPad kan du lägga till en svensk röst under Inställningar → Hjälpmedel → Uppläst innehåll → Röster.)";playBtn.disabled=true;return false}
+    playBtn.disabled=false;status.textContent="Hör du inget? Kolla att volymen är uppe och att enheten inte är på ljudlöst. Tryck på ett begrepp för att börja där.";return true;
+  }
+  if(synth)synth.onvoiceschanged=check;
+  function speak(){
+    if(!playing)return;
+    const ts=items();
+    if(idx>=ts.length)return finish();
+    mark(idx);
+    const my=++run,t=ts[idx];
+    const u=new SpeechSynthesisUtterance(`${t.t}. ${t.d} Exempel: ${t.e}`);
+    u.lang="sv-SE";u.voice=svVoices()[0]||null;u.rate=rate;
+    u.onend=()=>{if(my===run&&playing){idx++;speak()}};
+    u.onerror=e=>{if(my===run&&playing&&e.error!=="canceled"&&e.error!=="interrupted"){idx++;speak()}};
+    synth.speak(u);
+  }
+  function play(){
+    if(!check())return;
+    if(idx>=items().length)idx=0;
+    playing=true;run++;if(synth.speaking||synth.pending)synth.cancel();
+    playBtn.textContent="⏸ Pausa";speak();
+  }
+  function pause(){
+    playing=false;run++;if(synth)synth.cancel();
+    playBtn.textContent="▶ Fortsätt";
+  }
+  function finish(){
+    playing=false;idx=0;mark(-1);playBtn.textContent="▶ Lyssna igen";
+    const first=!S.heard["s"+sec];S.heard["s"+sec]=true;save();played();
+    if(first){addXp(20);toast("🎧 Avsnittet klart! +20 XP");sfx.win()}
+    
+    drawSections();
+    const n=sec+1;
+    next.replaceChildren(SECTIONS[n]
+      ?h("button",{class:"btn",onclick:()=>{sec=n;idx=0;drawSections();drawList();play()}},"Nästa avsnitt ▶")
+      :h("button",{class:"btn",onclick:()=>go("oral")},"Testa dig själv: Förklara högt ▶"));
+  }
+  cleanup=()=>{playing=false;run++;if(synth){synth.cancel();synth.onvoiceschanged=null}};
+  drawSections();drawList();check();
+  app.append(h("h2",{},"🎧 Lyssna"),
+    h("p",{class:"sub"},"Perfekt att lyssna på innan du sover eller på bussen. Lyssna klart på podden för XP och en bricka."),
+    h("h3",{},"Geografipodden – två röster"),
+    h("div",{class:"grid menu"},h("button",{class:"tile",onclick:()=>go("episode")},
+      h("span",{class:"em","aria-hidden":"true"},"🎧"),
+      h("b",{},PODCAST.t,S.heard.pod?h("span",{class:"done-tag"}," ✓ lyssnat"):null),
+      h("span",{class:"d"},PODCAST.min))),
+    h("h3",{style:"margin-top:22px"},"Begreppen upplästa av enhetens röst"),
+    h("p",{class:"hint"},"Enhetens röst läser upp varje begrepp, vad det betyder och exemplet. Lyssna klart på ett avsnitt för XP."),
+    h("div",{class:"card"},chips,h("div",{class:"row"},playBtn,restart),speedEls,status),next,listEl);
+};
+
+VIEWS.episode=()=>{
+  const ep=PODCAST;let rate=1;
+  const audio=h("audio",{controls:true,preload:"metadata",src:ep.audio,style:"width:100%;margin-bottom:6px"});
+  const status=h("p",{class:"hint","aria-live":"polite"},"Hör du inget? Kolla att volymen är uppe och att enheten inte är på ljudlöst.");
+  const speeds=[["Lugnt",.85],["Normalt",1],["Snabbt",1.2]];
+  const speedEls=h("div",{class:"chips",role:"group","aria-label":"Hastighet",style:"margin:8px 0"});
+  const drawSpeeds=()=>speedEls.replaceChildren(...speeds.map(([l,v])=>h("button",{class:"chip","aria-pressed":String(rate===v),onclick:()=>{rate=v;audio.playbackRate=v;drawSpeeds()}},l)));
+  drawSpeeds();
+  const transcript=h("div",{class:"transcript",hidden:true},ep.lines.map(([who,text])=>h("div",{class:"pl "+(who==="A"?"host":"exp")},h("b",{},who==="A"?"Röst 1":"Röst 2"),h("span",{},text))));
+  const textToggle=h("button",{class:"chip","aria-pressed":"false",onclick:e=>{const on=e.target.getAttribute("aria-pressed")!=="true";e.target.setAttribute("aria-pressed",String(on));transcript.hidden=!on}},"Visa text");
+  const next=h("div",{style:"margin-top:14px"});
+  audio.addEventListener("play",()=>{audio.playbackRate=rate});
+  audio.addEventListener("error",()=>{status.textContent="Kunde inte ladda ljudet. Kolla internetanslutningen och ladda om sidan."});
+  audio.addEventListener("ended",()=>{
+    const first=!S.heard.pod;S.heard.pod=true;save();played();
+    if(first){addXp(30);toast("🎧 Podden klar! +30 XP");sfx.win()}
+    unlock("lyssna");
+    next.replaceChildren(h("button",{class:"btn",onclick:()=>go("oral")},"Testa dig själv: Förklara högt ▶"));
+  });
+  cleanup=()=>audio.pause();
+  app.append(h("h2",{},"🎧 "+ep.t),h("div",{class:"card"},audio,h("div",{class:"row"},textToggle),speedEls,status),next,transcript);
+};
+
+/* ============ PLUGGA ============ */
+VIEWS.study=focus=>{
+  let sec=0,query="",openAll=false,focusId=focus||null;
+  const list=h("div",{class:"list"}),chips=h("div",{class:"chips",role:"group","aria-label":"Välj avsnitt"});
+  const search=h("input",{type:"search","aria-label":"Sök begrepp",placeholder:"Sök begrepp…",oninput:e=>{query=e.target.value.toLowerCase();draw()}});
+  const toggle=h("button",{class:"chip","aria-pressed":"false",onclick:e=>{openAll=!openAll;e.target.setAttribute("aria-pressed",String(openAll));draw()}},"Visa alla förklaringar");
+  function draw(){
+    chips.replaceChildren(...[[0,"Alla"],...Object.entries(SECTIONS).map(([k,v])=>[+k,`${k}. ${v}`])].map(([k,v])=>h("button",{class:"chip","aria-pressed":String(sec===k),onclick:()=>{sec=k;draw()}},v)),toggle);
+    const ts=termsFor(sec).filter(t=>!query||(t.t+" "+t.d+" "+t.e).toLowerCase().includes(query));
+    list.replaceChildren(...(ts.length?ts.map(t=>{
+      const links=NB.get(t.id)||[];
+      const d=h("details",{class:"t",id:"term-"+t.id},
+        h("summary",{},h("span",{class:"dot"+(mastered(t.id)?" m":""),title:mastered(t.id)?"Bemästrat":"Inte bemästrat än"}),t.t),
+        h("div",{class:"d"},
+          h("p",{},h("b",{},"Betyder: "),t.d),
+          h("div",{class:"ex"},h("b",{},"Förklarande exempel: "),t.e),
+          links.length?h("div",{class:"links"},h("b",{},"Hänger ihop med – tryck för att hoppa dit:"),
+            links.map(({o,why})=>h("button",{class:"linkrow",onclick:()=>{focusId=o.id;sec=0;query="";search.value="";draw()}},h("b",{},o.t),": ",why))):null,
+          canSpeak()?h("button",{class:"btn ghost",style:"margin-top:8px",onclick:()=>speakNow(`${t.t}. ${t.d} ${t.e}`)},"🔊 Läs upp"):null));
+      d.open=openAll||t.id===focusId;return d;
+    }):[h("p",{},"Inga begrepp hittades.")]));
+    if(focusId){const el=document.getElementById("term-"+focusId);focusId=null;if(el)el.scrollIntoView({block:"center",behavior:reduce?"auto":"smooth"})}
+  }
+  cleanup=()=>{if(synth)synth.cancel()};
+  draw();
+  app.append(h("h2",{},"📖 Plugga begrepp"),h("p",{class:"sub"},"Tryck på ett begrepp för att se vad det betyder, exemplet och vilka andra begrepp det hänger ihop med. Tips: försök förklara det högt innan du öppnar! Grön prick = du kan det."),search,chips,list);
+};
+
+hud();
+go("home");
+</script>
+</body>
+</html>
